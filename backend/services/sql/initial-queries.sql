@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `customer_identifier` (
   `customer_phone_number` varchar(255) NOT NULL,
   `customer_added_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `customer_hash` varchar(255) NOT NULL,
+  
   PRIMARY KEY (customer_id),
   UNIQUE (customer_email)
 ) ENGINE=InnoDB;
@@ -45,7 +46,9 @@ CREATE TABLE IF NOT EXISTS `company_roles` (
 CREATE TABLE IF NOT EXISTS `common_services` (
   `service_id` int(11) NOT NULL AUTO_INCREMENT,
   `service_name` varchar(255) NOT NULL,
+  `Service_Price` int(11) NOT NULL,
   `service_description` TEXT,
+  `active` int(11) NOT NULL,
   PRIMARY KEY (service_id)
 ) ENGINE=InnoDB;
 
@@ -56,6 +59,7 @@ CREATE TABLE IF NOT EXISTS `employee` (
   `employee_email` varchar(255) NOT NULL,
   `active_employee` int(11) NOT NULL,
   `added_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `employee_image` varchar(255) NOT NULL,
   PRIMARY KEY (employee_id), 
   UNIQUE (employee_email)
 ) ENGINE=InnoDB;
@@ -134,6 +138,17 @@ CREATE TABLE IF NOT EXISTS `order_status` (
   FOREIGN KEY (order_id) REFERENCES orders(order_id)
 ) ENGINE=InnoDB;
 
+-- Garage Purchases table
+CREATE TABLE IF NOT EXISTS `garage_purchases` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `item_name` varchar(255) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `price` decimal(10, 2) NOT NULL,
+  `purchase_date` DATE NOT NULL,
+  `image_url` varchar(255),
+  PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
 -- Add the roles to the database 
 INSERT INTO company_roles (company_role_name)
 VALUES ('Employee'), ('Manager'), ('Admin');
@@ -147,7 +162,7 @@ VALUES (1, 'Admin', 'Admin', 555-555-5555);
 
 -- Password is 123456
 INSERT INTO employee_pass (employee_id, employee_password_hashed)
-VALUES (1, '$2b$10$B6yvl4hECXploM.fCDbXz.brkhmgqNlawh9ZwbfkFX.F3xrs.15Xi');  
+VALUES (1, '$2b$10$ceYuf8esgIge0dnr01SGO.Q8Qhn.c4q4kTg.TS4A40.oj0aSwbhG2');  
 
 INSERT INTO employee_role (employee_id, company_role_id)
 VALUES (1, 3); 

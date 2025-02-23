@@ -1,133 +1,141 @@
-import React from 'react';
-// Import the Link component from react-router-dom 
-import { Link } from 'react-router-dom'
-// Import the logo image 
-import logo from '../../../assets/images/logo.png';
-// Import the login service to access the logout function
-import loginService from '../../../services/login.service';
-// Import the custom context hook 
-import { useAuth } from '../../../Contexts/AuthContext';
+import React from "react";
+import { Navbar, Nav, Container, Button, Dropdown } from "react-bootstrap";
+import logo from "../../../Assets/img/logo/logo.png";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../../Contexts/AuthContext";
+import { FaUserCircle, FaEdit, FaSignOutAlt } from "react-icons/fa";
+import "./Header.css";
 
+function Header() {
+  const { isLogged, employee, logout } = useAuth();
+  const navigate = useNavigate();
 
-function Header(props) {
-  // Use the custom hook to access the data in the context 
-  const { isLogged, setIsLogged, employee } = useAuth();
-  // console.log(useAuth());
-
-  // Log out event handler function
-  const logOut = () => {
-    // Call the logout function from the login service 
-    loginService.logOut();
-    // Set the isLogged state to false 
-    setIsLogged(false);
-  }
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
-    <div>
-      <header className="main-header header-style-one">
-        <div className="header-top">
-          <div className="auto-container">
-            <div className="inner-container">
-              <div className="left-column">
-                <div className="text">Enjoy the Beso while we fix your car</div>
-                <div className="office-hour">Monday - Saturday 7:00AM - 6:00PM</div>
-              </div>
-              <div className="right-column">
-                {isLogged ? (
-                  <div className="link-btn">
-                    <div className="phone-number"><strong>Welcome {employee?.employee_first_name}</strong></div>
-                  </div>
-                ) : (
-                  <div className="phone-number">Schedule Appointment: <strong>1800 456 7890   </strong> </div>
-                )}
-              </div>
+    <>
+      {/* Top Bar */}
+      <div className="top-bar bg-primary text-white py-2">
+        <div className="container-fluid d-flex justify-content-between align-items-center">
+          <div className="left-column d-flex align-items-center">
+            <div className="text me-4">
+              Schedule Appointment: <strong>1800 456 7890</strong>
+            </div>
+            <div className="office-hour me-4">
+              Monday - Saturday 7:00AM - 6:00PM
+            </div>
+          </div>
+          <div className="right-column d-flex align-items-center">
+            <div className="phone-number me-4">
+              <strong>
+                {isLogged
+                  ? employee?.employee_first_name
+                    ? `Welcome, ${employee?.employee_first_name} `
+                    : `Welcome, ${employee?.customer_email}`
+                  : "Welcome"}
+              </strong>
             </div>
           </div>
         </div>
-        <div className="header-upper">
-          <div className="auto-container">
-            <div className="inner-container">
-              <div className="logo-box">
-                <div className="logo"><a href="/"><img src={logo} alt="" /></a>
-                </div>
-              </div>
-              <div className="right-column">
-                <div className="nav-outer">
-                  <div className="mobile-nav-toggler"><img src="assets/images/icons/icon-bar.png" alt="" />
-                  </div>
-                  <nav className="main-menu navbar-expand-md navbar-light">
-                    <div className="collapse navbar-collapse show clearfix" id="navbarSupportedContent">
-                      <ul className="navigation">
-                        <li className="dropdown"><a href="/">Home</a>
-                        </li>
-                        <li className="dropdown"><a href="/about">About Us</a>
-                        </li>
-                        <li className="dropdown"><a href="/services">Services</a>
-                        </li>
-                        <li><a href="/contact">Contact Us</a></li>
-                      </ul>
-                    </div>
-                  </nav>
-                </div>
-                <div className="search-btn"></div>
-                {isLogged ? (
-                  <div className="link-btn">
-                    <Link to="/" className="theme-btn btn-style-one blue" onClick={logOut} >Log out</Link>
-                  </div>
-                ) : (
-                  <div className="link-btn">
-                    <Link to="/login" className="theme-btn btn-style-one">Login</Link>
-                  </div>
-                )}
-              </div>
+      </div>
+
+      {/* Main Header */}
+      <header className="site-header sticky-header">
+        <Navbar
+          collapseOnSelect
+          expand="lg"
+          bg="light"
+          variant="light"
+          sticky="top"
+        >
+          <Container>
+            <Navbar.Brand className="me-auto">
+              <img
+                onClick={() => navigate("/")}
+                src={logo}
+                alt="Logo"
+                className="logo"
+              />
+            </Navbar.Brand>
+            {!isLogged && (
+              <>
+                <Navbar.Toggle
+                  aria-controls="navbarNavDropdown"
+                  className="border-0"
+                >
+                  <span className="navbar-toggler-icon"></span>
+                </Navbar.Toggle>
+
+                <Navbar.Collapse
+                  id="navbarNavDropdown"
+                  className="justify-content-center"
+                >
+                  <Nav className="text-center">
+                    <Link to="/" className="nav-link text-primary fw-bold">
+                      Home
+                    </Link>
+                    <Link to="/about" className="nav-link text-primary fw-bold">
+                      About Us
+                    </Link>
+                    <Link
+                      to="/services"
+                      className="nav-link text-primary fw-bold"
+                    >
+                      Service
+                    </Link>
+                    <Link
+                      to="/contact"
+                      className="nav-link text-primary fw-bold"
+                    >
+                      Contact Us
+                    </Link>
+                  </Nav>
+                </Navbar.Collapse>
+              </>
+            )}
+            <div className="ms-auto">
+              {isLogged ? (
+                <Dropdown align="end">
+                  <Dropdown.Toggle
+                    variant="link"
+                    id="dropdown-avatar"
+                    className="text-primary"
+                  >
+                    <FaUserCircle size={30} />
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu className="custom-dropdown bg-light">
+                    <Dropdown.Item
+                      onClick={() => navigate("/edit-profile")}
+                      className="d-flex align-items-center text-primary"
+                    >
+                      <FaEdit className="me-2" /> Edit Profile
+                    </Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item
+                      onClick={handleLogout}
+                      className="d-flex align-items-center text-primary"
+                    >
+                      <FaSignOutAlt className="me-2" /> Logout
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              ) : (
+                <Button
+                  onClick={() => navigate("/login")}
+                  className="btn btn-danger text-white fw-bold border-0"
+                >
+                  Login
+                </Button>
+              )}
             </div>
-          </div>
-        </div>
-        <div className="sticky-header">
-          <div className="header-upper">
-            <div className="auto-container">
-              <div className="inner-container">
-                <div className="logo-box">
-                  <div className="logo"><a href="/"><img src="assets/images/custom/logo.png" alt="" /></a>
-                  </div>
-                </div>
-                <div className="right-column">
-                  <div className="nav-outer">
-                    <div className="mobile-nav-toggler"><img src="assets/images/icons/icon-bar.png" alt="" />
-                    </div>
-
-                    <nav className="main-menu navbar-expand-md navbar-light">
-                    </nav>
-                  </div>
-                  <div className="search-btn"></div>
-                  <div className="link-btn"><a href="/login" className="theme-btn btn-style-one">Login</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="mobile-menu">
-          <div className="menu-backdrop"></div>
-          <div className="close-btn"><span className="icon flaticon-remove"></span></div>
-
-          <nav className="menu-box">
-            <div className="nav-logo"><a href="index.html">
-              <img src="assets/images/logo-two.png" alt=""
-                title="" /></a></div>
-            <div className="menu-outer">
-
-            </div>
-
-          </nav>
-        </div>
-
-        <div className="nav-overlay">
-          <div className="cursor"></div>
-          <div className="cursor-follower"></div>
-        </div>
+          </Container>
+        </Navbar>
       </header>
-    </div>
+    </>
   );
 }
 

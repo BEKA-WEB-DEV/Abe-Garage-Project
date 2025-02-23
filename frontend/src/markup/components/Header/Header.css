@@ -1,42 +1,106 @@
-/* Header.css */
-.site-header {
-  background-color: #f8f9fa; /* Ensure the background color is set */
-}
-
-.sticky-header {
+\/* Make header sticky */
+.main-header {
+  background-color: #f8f9fa;
+  padding: 15px;
   position: sticky;
   top: 0;
-  width: 100%;
-  z-index: 1020; /* Ensures the header stays above other content */
+  z-index: 1000; /* Ensures the header stays on top of other elements */
+}
+/* Other existing styles */
+.link-btn .theme-btn {
+  border-radius: 8px;
+}
+body {
+  font-family: cursive !important;
+}
+.collapse {
+  position: relative;
+}
+.office-hour {
+  font-size: 18px;
+  font-weight: 500;
 }
 
-/* Top Bar */
-.top-bar {
-  background-color: #007bff; /* Blue background */
-  color: white;
+.text {
+  font-weight: 600;
 }
 
-.top-bar .container-fluid {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.collapse::before {
+  content: ""; 
+  position: absolute; 
+  right: -40px; 
+  top: 35%; 
+  height: 30%; 
+  width: 2px; 
+  background-color: rgb(224, 217, 217); 
+  z-index: 1;
 }
-
-.top-bar .left-column {
-  display: flex;
-  align-items: center;
+.main-header .navigation a,
+.main-header .link-btn a {
+  text-decoration: none;
 }
-
-.top-bar .text,
-.top-bar .office-hour {
-  margin-right: 1rem;
+.main-header .navigation a:hover,
+.main-header .link-btn a:hover {
+  text-decoration: none;
+  color: #007bff;
 }
-
-.top-bar .right-column {
-  display: flex;
-  align-items: center;
+.main-header .link-btn a.theme-btn {
+  text-decoration: none;
 }
-
-.top-bar .phone-number {
-  font-weight: bold;
+.main-header .navigation .dropdown a {
+  text-decoration: none;
+}
+.nav-link {
+  position: relative;
+  display: block;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 30px;
+  color: #000;
+  padding: 3px 0;
+  opacity: 1;
+  transition: all 300ms ease;
+}
+.offcanvas-body {
+  background-color: rgb(224, 226, 220);
+}
+.offcanvas {
+  --bs-offcanvas-padding-y: 0.8rem;
+}
+/* Styles specific to mobile screens */
+@media (max-width: 768px) {
+  /* Ensure navbar-toggler (hamburger icon) is visible */
+  .navbar-toggler {
+    display: inline-block;
+    border: none;
+    background-color: transparent;
+    outline: none;
+    position: relative;
+    z-index: 1100; /* Keeps it on top of other elements */
+  }
+  /* Customize the offcanvas menu */
+  .offcanvas {
+    top: 60px; /* Offset from the top */
+  }
+  .offcanvas-body {
+    padding-top: 80px; /* Add extra space for better view */
+  }
+  .offcanvas-body .nav .nav-link,
+  .offcanvas-body .nav a {
+    padding: 12px 0;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  /* Adjust navbar-toggler spacing */
+  .navbar-toggler {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+}
+/* Show the hamburger menu on mobile screens only */
+@media (min-width: 769px) {
+  .navbar-toggler {
+    display: none; /* Hide hamburger icon on tablet and desktop */
+  }
 }

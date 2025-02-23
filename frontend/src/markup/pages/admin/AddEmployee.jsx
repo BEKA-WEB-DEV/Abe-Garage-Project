@@ -1,10 +1,10 @@
 import React from "react";
 // Import the AddEmployeeForm component
-import AddEmployeeForm from "../../components/Admin/AddEmployee/AddEmployeeForm";
+import AddEmployeeForm from "../../components/Admin/AddEmployeeForm/AddEmployeeForm";
 // Import the AdminMenu component
 import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
 
-function AddEmployee() {
+function AddEmployee(props) {
   return (
     <div>
       <div className="container-fluid admin-pages">
@@ -22,3 +22,4 @@ function AddEmployee() {
 }
 
 export default AddEmployee;
+

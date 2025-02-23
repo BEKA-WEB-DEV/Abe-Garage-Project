@@ -1,0 +1,68 @@
+
+.checkbox{display: flex;}
+.checkbox input{
+  width: 10%;
+}
+section h2{
+  color:#06175B ;
+}
+section h5{
+  font-weight: bold;
+  padding-bottom: 3%;
+}
+
+/* My additional start */
+/* Container for checkbox and label */
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Customize checkbox appearance */
+.checkbox input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none; /* For older Safari support */
+  width: 20px;
+  height: 20px;
+  background-color: #f0f0f0;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  display: inline-block;
+  margin-right: 10px; /* Space between checkbox and label */
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Checked state with visible checkmark */
+.checkbox input[type="checkbox"]:checked {
+  background-color: #4caf50;
+  border-color: #4caf50;
+}
+
+.checkbox input[type="checkbox"]:checked::before {
+  content: "✔";
+  font-size: 16px;
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none; /* Ensure the checkmark doesn't block input */
+}
+
+/* Hover effect */
+.checkbox input[type="checkbox"]:hover {
+  border-color: #888;
+}
+
+/* Focus effect for accessibility */
+.checkbox input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 3px #4caf50;
+}
+
+/* My additional ed */

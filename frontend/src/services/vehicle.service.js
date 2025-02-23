@@ -1,86 +1,34 @@
-import axios from "axios";
 
-// Import from the env
-const api_url = "http://localhost:5000 ";
+const api_url = import.meta.env.VITE_API_URL;
 
-// A function to send a POST request to add a new vehicle
-const createVehicle = async (formData, token) => {
-  try {
-    const response = await axios.post(
-      `http://localhost:5000/api/vehicle`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "x-access-token": token,
-        },
-      }
-    );
-
-    return response.data; // Axios returns the data directly
-  } catch (error) {
-    // Handle error
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      throw new Error(
-        error.response.data || "An error occurred while creating the vehicle"
-      );
-    } else if (error.request) {
-      // The request was made but no response was received
-      throw new Error("No response received from server");
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      throw new Error(
-        error.message || "An error occurred while creating the vehicle"
-      );
-    }
-  }
-};
-
-// A function to send a PUT request to update an existing vehicle
-const updateVehicle = async (formData, token) => {
+const createVehicle = async (formData, loggedInEmployeeToken) => {
+  console.log(formData, loggedInEmployeeToken);
   const requestOptions = {
-    method: "PUT",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-access-token": token, // Ensure token is being sent
+      "x-access-token": loggedInEmployeeToken,
     },
     body: JSON.stringify(formData),
   };
-  const response = await fetch(`${api_url}/api/vehicle`, requestOptions);
-  return response;
-};
-
-// A function to send a DELETE request to remove a vehicle by ID
-const deleteVehicle = async (vehicleId, token) => {
-  const url = `${api_url}/api/vehicle/${vehicleId}`;
-
-  const requestOptions = {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "x-access-token": token, // Ensure token is being sent
-    },
-  };
 
   try {
-    const response = await fetch(url, requestOptions);
-
-    if (!response.ok) {
-      const errorText = await response.text(); // Read the error message
-      throw new Error(errorText);
-    }
-
-    return response.json(); // Assuming the server responds with JSON
+    const response = await fetch(`${api_url}/api/vehicle`, requestOptions);
+    console.log(response);
+   
+    let data=await response.json();
+    console.log(data);
+    
+    // return response.json();
+    return data;
   } catch (error) {
-    console.error("Error deleting vehicle:", error);
+    console.error("Error creating vehicle:", error);
     throw error;
   }
 };
 
-// A function to send a GET request to retrieve all vehicles
-const getAllVehicles = async (token) => {
+
+const getAllVehicle = async (token) => {
   const requestOptions = {
     method: "GET",
     headers: {
@@ -88,12 +36,36 @@ const getAllVehicles = async (token) => {
       "x-access-token": token,
     },
   };
-  const response = await fetch(`${api_url}/api/vehicles`, requestOptions);
-  return response;
+
+  try {
+    const response = await fetch(
+      `${api_url}/api/vehicles/:customer_id`,
+      requestOptions
+    );
+    // Check if the response status is OK
+    console.log(response);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    // Parse the JSON data from the response
+    const data = await response.json();
+    console.log(data);
+    // Check the status of the returned data
+    if (data && Array.isArray(data) && data.length > 0) {
+      console.log("Data fetched successfully:", data);
+      return data; // Return the data to be used by the calling code
+    } else {
+      console.error("No data returned or data is not in expected format.");
+      throw new Error(`No service data available. Please add a new service.`);
+    }
+  } catch (error) {
+    console.error("Error fetching services:", error);
+    throw error; // Re-throw the error to be handled by the caller
+  }
 };
 
-// A function to send a GET request to retrieve vehicles by customer name
-const getVehicleByCustomerId = async (customer_id, token) => {
+const getVehicleById = async (token, id) => {
+  console.log("Fetching service ID:", id);
   const requestOptions = {
     method: "GET",
     headers: {
@@ -101,21 +73,116 @@ const getVehicleByCustomerId = async (customer_id, token) => {
       "x-access-token": token,
     },
   };
-  const response = await fetch(
-    `http://localhost:5000/api/vehicles/customer/${customer_id}`,
-    requestOptions
-  );
-  console.log(response);
-  return response;
+
+  try {
+    const response = await fetch(
+      `${api_url}/api/vehicle/${id}`,
+      requestOptions
+    );
+
+    console.log("Response:", response);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `HTTP error! Status: ${response.status}, Details: ${errorText}`
+      );
+    }
+
+    const data = await response.json();
+
+    console.log("Data:", data);
+
+    // Ensure `data` contains `data` field and it is an array with at least one item
+    if (typeof data !== "object" || Object.keys(data).length === 0) {
+      throw new Error(
+        `Failed to fetch service: ${data.message || "Unknown error"}`
+      );
+    }
+    // Return the first item of the array
+    return data;
+  } catch (error) {
+    console.error("Error fetching service:", error);
+    throw error;
+  }
+};
+// Function to update employee data
+const updateVehicle = async (token, formData, id) => {
+  const requestOptions = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "x-access-token": token,
+    },
+    body: JSON.stringify(formData),
+  };
+  console.log("FormData being sent:", formData);
+  try {
+    const response = await fetch(
+      `${api_url}/api/vehicle/`,
+      requestOptions
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `HTTP error! Status: ${response.status}, Details: ${errorText}`
+      );
+    }
+    if (response.status === 200) {
+      return response; // Return the data if the update was successful
+    } else {
+      throw new Error(
+        `Failed to update service: ${data.message || "Unknown error"}`
+      );
+    }
+  } catch (error) {
+    console.error("Error updating service:", error);
+    throw error;
+  }
+};
+
+// A function to send delete request to delete an employee
+const deleteVehicle = async (token, id) => {
+  const requestOptions = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "x-access-token": token,
+    },
+  };
+
+  try {
+    const response = await fetch(
+      `${api_url}/api/vehicle/${id}`,
+      requestOptions
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `HTTP error! Status: ${response.status}, Details: ${errorText}`
+      );
+    }
+
+    if (response.status === 200) {
+      console.log(response);
+      return response; // Return the data if the delete was successful
+    } else {
+      throw new Error(
+        `Failed to delete service: ${data.message || "Unknown error"}`
+      );
+    }
+  } catch (error) {
+    console.error("Error deleting service:", error);
+    throw error;
+  }
 };
 
 // Export all the functions
 const vehicleService = {
   createVehicle,
+  getAllVehicle,
+  getVehicleById,
   updateVehicle,
   deleteVehicle,
-  getAllVehicles,
-  getVehicleByCustomerId,
 };
-
 export default vehicleService;

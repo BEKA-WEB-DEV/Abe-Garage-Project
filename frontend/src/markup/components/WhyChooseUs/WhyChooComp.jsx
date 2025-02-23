@@ -1,6 +1,6 @@
 import React from "react";
-import imgOther1 from "../../../Assets/ServicesImg/ServiceImg6.png";
-import imgOther2 from "../../../Assets/ServicesImg/ServiceImg2.png";
+import imgOther1 from "../../../assets/images/service/ServiceImg6.png";
+// import imgOther2 from "../../../assets/images/service/ServiceImg2.png";
 import { Link } from "react-router-dom";
 import "./whychoocomp.css";
 

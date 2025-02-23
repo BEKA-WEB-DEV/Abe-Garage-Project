@@ -9,7 +9,7 @@ import {
   Alert,
 } from "react-bootstrap";
 import EmployeeService from "../../../../services/employee.service"; // Adjust path as needed
-import { useAuth } from "../../../../Contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 function EmpSetting() {
   const { employee, logout } = useAuth();
   const [currentPassword, setCurrentPassword] = useState("");

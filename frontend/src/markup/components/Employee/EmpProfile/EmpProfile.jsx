@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Spinner, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import EmployeeService from "../../../../services/employee.service"; // Adjust path as needed
-import { useAuth } from "../../../../Contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 function EmpProfile() {
   const [employeeInfo, setEmployee] = useState(null);

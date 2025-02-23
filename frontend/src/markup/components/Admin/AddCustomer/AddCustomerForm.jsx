@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button, Col, Row, Alert } from "react-bootstrap";
 import customerService from "../../../../services/customer.service";
-import { useAuth } from "../../../../Contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import AddVehicleForm from "../AddVehicleForm/AddVehicleForm"; // Adjust the path as needed
 
 function AddCustomerForm() {

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Container, Row, Col } from "react-bootstrap";
-import { useAuth } from "../../Contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 function Unauthorized() {
   const { isLogged, isAdmin } = useAuth();

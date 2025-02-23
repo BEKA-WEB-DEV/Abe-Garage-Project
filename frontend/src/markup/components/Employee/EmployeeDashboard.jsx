@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { FaRegSmile } from "react-icons/fa"; // For an icon
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./EmployeeDashboard.css"; // Custom CSS file
-import { useAuth } from "../../../Contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 function EmployeeDashboard() {
   const { employee } = useAuth();

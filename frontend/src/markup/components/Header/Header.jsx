@@ -1,8 +1,8 @@
 import React from "react";
 import { Navbar, Nav, Container, Button, Dropdown } from "react-bootstrap";
-import logo from "../../../Assets/img/logo/logo.png";
+import logo from "../../../assets/images/logo.png";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../../../Contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { FaUserCircle, FaEdit, FaSignOutAlt } from "react-icons/fa";
 import "./Header.css";
 

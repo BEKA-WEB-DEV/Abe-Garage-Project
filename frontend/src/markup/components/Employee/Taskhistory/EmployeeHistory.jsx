@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table, Spinner, Alert, Button, Collapse } from "react-bootstrap";
-import { useAuth } from "../../../../Contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import OrderService from "../../../../services/order.service";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs"; // For icons
 import { FaCheckCircle } from "react-icons/fa"; // Importing checkmark icon

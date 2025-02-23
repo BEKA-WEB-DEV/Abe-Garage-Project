@@ -1,5 +1,5 @@
 import React from "react";
-import video from "../../../Assets/Advert_Vedio/Advert.mp4";
+import video from "../../../assets/advert_video/Advert.mp4";
 import "./HeroComp.css";
 
 function HeroPage() {

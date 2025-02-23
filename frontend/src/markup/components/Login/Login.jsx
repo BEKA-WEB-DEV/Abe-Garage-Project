@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import loginService from "../../../services/login.service";
-import { useAuth } from "../../../Contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import {
   Form,
   Button,

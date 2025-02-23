@@ -1,11 +1,12 @@
 import React from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
-import img1 from "../../../Assets/abe/240-g.jpg";
-import img2 from "../../../Assets/abe/240-g.jpg";
-import img3 from "../../../Assets/abe/240-g.jpg";
-import img4 from "../../../Assets/abe/240-g.jpg";
-import img5 from "../../../Assets/abe/240-g.jpg";
-import img6 from "../../../Assets/abe/240-g.jpg";
+import img1 from "../../../assets/images/service/1.jpeg";
+import img2 from "../../../assets/images/service/2.jpeg";
+import img3 from "../../../assets/images/service/3.jpeg";
+import img4 from "../../../assets/images/service/4.jpeg";
+import img5 from "../../../assets/images/service/5.jpg";
+import img6 from "../../../assets/images/service/6.jpg";
+
 import "./Service.css";
 
 function Services() {

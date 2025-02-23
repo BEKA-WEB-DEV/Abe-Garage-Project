@@ -1,4 +1,6 @@
--- Customers tables  
+-- ============================================
+-- Customers Tables
+-- ============================================
 CREATE TABLE IF NOT EXISTS `customer_identifier` (
   `customer_id` INT(11) NOT NULL AUTO_INCREMENT,
   `id` VARCHAR(50) NOT NULL,
@@ -38,7 +40,10 @@ CREATE TABLE IF NOT EXISTS `customer_vehicle_info` (
   PRIMARY KEY (`vehicle_id`),
   FOREIGN KEY (`customer_id`) REFERENCES `customer_identifier`(`customer_id`)
 ) ENGINE=InnoDB;
--- Company tables 
+
+-- ============================================
+-- Company Tables
+-- ============================================
 CREATE TABLE IF NOT EXISTS `company_roles` (
   `company_role_id` INT(11) NOT NULL AUTO_INCREMENT,
   `company_role_name` VARCHAR(255) NOT NULL,
@@ -55,8 +60,9 @@ CREATE TABLE IF NOT EXISTS `common_services` (
   PRIMARY KEY (`service_id`)
 ) ENGINE=InnoDB;
 
-
--- Employee tables 
+-- ============================================
+-- Employee Tables
+-- ============================================
 CREATE TABLE IF NOT EXISTS `employee` (
   `employee_id` VARCHAR(50) NOT NULL,
   `employee_email` VARCHAR(255) NOT NULL,
@@ -93,7 +99,9 @@ CREATE TABLE IF NOT EXISTS `employee_role` (
   FOREIGN KEY (`company_role_id`) REFERENCES `company_roles`(`company_role_id`)
 ) ENGINE=InnoDB;
 
--- Order tables  
+-- ============================================
+-- Order Tables
+-- ============================================
 CREATE TABLE IF NOT EXISTS `orders` (
   `order_id` INT(11) NOT NULL AUTO_INCREMENT,
   `id` VARCHAR(50) NOT NULL,
@@ -109,9 +117,9 @@ CREATE TABLE IF NOT EXISTS `orders` (
   FOREIGN KEY (`customer_id`) REFERENCES `customer_identifier`(`customer_id`),
   FOREIGN KEY (`vehicle_id`) REFERENCES `customer_vehicle_info`(`vehicle_id`)
 ) ENGINE=InnoDB;
--- Add the new column to the orders table
+
 ALTER TABLE orders
-ADD COLUMN order_description TEXT;
+  ADD COLUMN order_description TEXT;
 
 CREATE TABLE IF NOT EXISTS `order_info` (
   `order_info_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -151,8 +159,10 @@ CREATE TABLE IF NOT EXISTS `order_status` (
   FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`)
 ) ENGINE=InnoDB;
 
-
--- -- Add the roles to the database 
+-- ============================================
+-- Insert Initial Data
+-- ============================================
+-- Add the roles to the database 
 INSERT INTO company_roles (company_role_name)
 VALUES ('Employee'), ('Manager'), ('Admin');
 
@@ -164,9 +174,9 @@ VALUES ('b054e05e17655e3677e60fca9693514e', 'admin@admin.com', 1, CURRENT_TIMEST
 INSERT INTO employee_info (employee_id, employee_first_name, employee_last_name, employee_phone)
 VALUES ('b054e05e17655e3677e60fca9693514e', 'Admin', 'Admin', '555-555-5555');
 
--- Password is 123456
+-- Password is 123456789
 INSERT INTO employee_pass (employee_id, employee_password_hashed)
-VALUES ('b054e05e17655e3677e60fca9693514e', '$2b$10$RvTPatloKkwOr4EXa9BmZuLCzlssO9CL8mABH4bJnkkluQEJxA72G');
+VALUES ('b054e05e17655e3677e60fca9693514e', '$2y$10$S2EF.ttUrbaOwiTozz2PaeN3Lz6r4ehBxKezwHfYqWBXnjxm6VQSq');
 
 -- Assign a role to the employee
 INSERT INTO employee_role (employee_id, company_role_id)

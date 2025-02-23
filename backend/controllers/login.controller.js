@@ -8,7 +8,7 @@ const jwtSecret = process.env.JWT_SECRET;
 // Handle employee login 
 async function logIn(req, res, next) {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const employeeData = req.body;
     // Call the logIn method from the login service
     const employee = await loginService.logIn(employeeData);
@@ -34,7 +34,7 @@ async function logIn(req, res, next) {
       expiresIn: "24h",
     });
 
-    console.log(token);
+    // console.log(token);
     const sendBack = {
       employee_token: token,
     };

@@ -5,46 +5,26 @@ const router = express.Router();
 // Import the install router
 const installRouter = require("./install.routes");
 // Import the employee routes
-
-const employeeRouter = require("./employee.routes");
-
-// Import the item routes
-const itemRouter = require("./items.routes");
-
-// Import the login routes
-const loginRoutes = require("./login.routes");
-//import the customer routes
-const customerRouter = require("./customer.routes");
-// Add the install router to the main router
-const newsRouter = require("./news.routes");
-// import the service routes
-const serviceRouter = require("./service.routes");
-//import the vehicle routes
-const vehicleRouter = require("./vehicle.routes");
-const orderRouter = require("./order.routes");
-const profileRouter = require("./profile.routes");
-
-// Use the order router
-router.use(orderRouter);
-
-router.use(customerRouter);
-router.use("/profile", profileRouter);
-
-//add the service routes
-router.use(serviceRouter);
-
+// const employeeRouter = require("./employee.routes");
 // Add the install router to the main router
 router.use(installRouter);
-// Add the employee routes to the main router
+// Import the employee routes 
+const employeeRouter = require('./employee.routes');
+// Add the employee routes to the main router 
 router.use(employeeRouter);
 // Add the login routes to the main router
+const loginRoutes=require("./login.routes") 
 router.use(loginRoutes);
-// Add the vehicle routes to the main router
-router.use(vehicleRouter);
-
-// Add the item routes to the main router
-router.use(itemRouter);
-
-router.use(newsRouter);
-// Export the router
+//import customer routes
+const customerRoutes=require("./customer.routes")
+router.use(customerRoutes)
+//import the service routes 
+const serviceRoutes=require("./service.routes")
+router.use(serviceRoutes)
+//import the order routes
+const orderRoutes=require("./order.routes")
+router.use(orderRoutes)
+//import the vehicle routes
+const vehicleRoutes=require("./vehicle.routes")
+router.use(vehicleRoutes) 
 module.exports = router;

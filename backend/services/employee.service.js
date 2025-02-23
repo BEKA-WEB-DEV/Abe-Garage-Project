@@ -2,6 +2,7 @@
 const conn = require("../config/db.config");
 // Import the bcrypt module
 const bcrypt = require("bcrypt");
+const { v4: uuidv4 } = require("uuid"); // Use uuid for unique IDs
 
 // A function to check if employee exists in the database
 async function checkIfEmployeeExists(email) {
@@ -13,57 +14,58 @@ async function checkIfEmployeeExists(email) {
   }
   return false;
 }
-
 // A function to create a new employee
-async function createEmployee(row1, row2, row3, employee_password) {
+async function createEmployee(employee) {
   let createdEmployee = {};
   try {
+    // Generate a unique string ID
+    const employee_id = uuidv4().toUpperCase();
+
     // Generate a salt and hash the password
     const salt = await bcrypt.genSalt(10);
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(employee_password, salt);
-    // Insert the email in to the employee table
+    const hashedPassword = await bcrypt.hash(employee.employee_password, salt);
+
+    // Insert the email into the employee table with the generated ID
     const query =
-      "INSERT INTO employee (employee_email, active_employee,added_date,employee_image) VALUES (?,?,NOW(),?)";
-    const rows = await conn.query(query, [row1[0], row1[1], row1[2]]);
+      "INSERT INTO employee (employee_id, employee_email, active_employee) VALUES (?, ?, ?)";
+    const rows = await conn.query(query, [
+      employee_id,
+      employee.employee_email,
+      employee.active_employee,
+    ]);
+    console.log(rows);
+
     if (rows.affectedRows !== 1) {
       return false;
     }
-    // Get the employee id from the insert
-    const employee_id = rows.insertId;
-    // Insert the remaining data in to the employee_info, employee_pass, and employee_role tables
+
+    // Insert the remaining data into the other tables
     const query2 =
       "INSERT INTO employee_info (employee_id, employee_first_name, employee_last_name, employee_phone) VALUES (?, ?, ?, ?)";
-    const rows2 = await conn.query(query2, [
+    await conn.query(query2, [
       employee_id,
-      row2[0],
-      row2[1],
-      row2[2],
+      employee.employee_first_name,
+      employee.employee_last_name,
+      employee.employee_phone,
     ]);
-    if (rows2.affectedRows !== 1) {
-      return false;
-    }
+
     const query3 =
       "INSERT INTO employee_pass (employee_id, employee_password_hashed) VALUES (?, ?)";
-    const rows3 = await conn.query(query3, [employee_id, hashedPassword]);
-    if (rows3.affectedRows !== 1) {
-      return false;
-    }
+    await conn.query(query3, [employee_id, hashedPassword]);
+
     const query4 =
       "INSERT INTO employee_role (employee_id, company_role_id) VALUES (?, ?)";
-    const rows4 = await conn.query(query4, [employee_id, row3[0]]);
-    if (rows4.affectedRows !== 1) {
-      return false;
-    } else {
-      console.log("employee created");
-      return true;
-    }
-    // construct to the employee object to return
+    await conn.query(query4, [employee_id, employee.company_role_id]);
+
+    createdEmployee = {
+      employee_id: employee_id,
+    };
   } catch (err) {
     console.log(err);
   }
-  // Return the employee object
+  return createdEmployee;
 }
+
 // A function to get employee by email
 async function getEmployeeByEmail(employee_email) {
   const query =
@@ -71,261 +73,149 @@ async function getEmployeeByEmail(employee_email) {
   const rows = await conn.query(query, [employee_email]);
   return rows;
 }
-
-async function getCustomerByEmail(customer_email) {
-  const query = "SELECT * FROM customer_identifier  WHERE customer_email = ?";
-  const rows = await conn.query(query, [customer_email]);
-  return rows;
-}
-
 // A function to get all employees
-const getAllEmployees = async () => {
+async function getAllEmployees() {
+  const query =
+    "SELECT * FROM employee INNER JOIN employee_info ON employee.employee_id = employee_info.employee_id INNER JOIN employee_role ON employee.employee_id = employee_role.employee_id INNER JOIN company_roles ON employee_role.company_role_id = company_roles.company_role_id ORDER BY employee.employee_id DESC limit 10";
+  const rows = await conn.query(query);
+  return rows;}
+
+async function getEmployeeFromDb(id) {
   try {
-    // Fetch employee data including image URL
-    const rows = await conn.query(`
-      SELECT e.employee_id, e.employee_email, e.active_employee, e.added_date, e.employee_image,
-             ei.employee_first_name, ei.employee_last_name, ei.employee_phone,
-             er.company_role_id
-      FROM employee e
-      JOIN employee_info ei ON e.employee_id = ei.employee_id
-      JOIN employee_role er ON e.employee_id = er.employee_id
-    `);
+    console.log(`Executing query with ID: ${id}`);
 
-    // Construct full image URL if using a URL or static path
-    const baseImageUrl = "http://localhost:5000"; // Update with your actual base URL or path
-
-    const employees = rows.map((employee) => ({
-      ...employee,
-      employee_image: employee.employee_image
-        ? baseImageUrl + employee.employee_image
-        : null,
-    }));
-
-    return employees;
-  } catch (error) {
-    console.error("Error fetching employees:", error);
-    throw new Error("Error fetching employees");
-  }
-};
-//get by id
-const getEmployeeById = async (employee_id) => {
-  try {
-    // Query to fetch employee data by ID
     const rows = await conn.query(
       `
-      SELECT e.employee_id, e.employee_email, e.active_employee, e.added_date, e.employee_image,
-             ei.employee_first_name, ei.employee_last_name, ei.employee_phone,
-             er.company_role_id
+      SELECT 
+        e.employee_id,
+        e.employee_email,
+        e.active_employee,
+        e.added_date,
+        ei.employee_first_name,
+        ei.employee_last_name,
+        ei.employee_phone,
+        er.company_role_id,
+        cr.company_role_name
       FROM employee e
-      JOIN employee_info ei ON e.employee_id = ei.employee_id
-      JOIN employee_role er ON e.employee_id = er.employee_id
+      LEFT JOIN employee_info ei ON e.employee_id = ei.employee_id
+      LEFT JOIN employee_role er ON e.employee_id = er.employee_id
+      LEFT JOIN company_roles cr ON er.company_role_id = cr.company_role_id
       WHERE e.employee_id = ?
     `,
-      [employee_id]
+      [id]
     );
 
-    // Check if any rows were returned
-    if (rows.length === 0) {
-      throw new Error(`Employee with ID ${employee_id} not found.`);
-    }
+    console.log(`Query result: ${JSON.stringify(rows)}`);
 
-    // Construct full image URL if using a URL or static path
-    const baseImageUrl = "http://localhost:5000"; // Update with your actual base URL or path
+    
 
-    // Format the employee data
-    const employee = {
-      ...rows[0],
-      employee_image: rows[0].employee_image
-        ? baseImageUrl + rows[0].employee_image
-        : null,
-    };
-
-    return employee;
+    return { status: 200, data:rows };
   } catch (error) {
-    console.error(`Error fetching employee with ID ${employee_id}:`, error);
-    throw new Error("Error fetching employee details");
-  }
-};
-
-// delete employee
-async function deleteEmployee(employee_id) {
-  console.log(employee_id);
-  //check if employee id not null
-  if (!employee_id) {
-    return false;
-  }
-
-  // Delete from employee_role table
-  const query2 = "DELETE FROM employee_role WHERE employee_id = ?";
-  const rows2 = await conn.query(query2, [employee_id]);
-
-  // Delete from employee_pass table
-  const query3 = "DELETE FROM employee_pass WHERE employee_id = ?";
-  const rows3 = await conn.query(query3, [employee_id]);
-
-  // Delete from employee_info table
-  const query4 = "DELETE FROM employee_info WHERE employee_id = ?";
-  const rows4 = await conn.query(query4, [employee_id]);
-  // Delete from employee table
-  const query = "DELETE FROM employee WHERE employee_id = ?";
-  const rows = await conn.query(query, [employee_id]);
-
-  // Check if the deletion was successful
-  if (
-    rows.affectedRows === 1 &&
-    rows2.affectedRows === 1 &&
-    rows3.affectedRows === 1 &&
-    rows4.affectedRows === 1
-  ) {
-    return true;
-  } else {
-    return false;
+    console.error("Error fetching employee:", error);
+    return { status: 500, message: "Internal server error" };
   }
 }
-async function updateEmployee(updatedEmployeeData) {
-  let hashedPassword = null;
+
+// A function to update an existing employee
+async function updateEmployee(id, employeeData) {
   const {
-    employee_id,
     employee_first_name,
     employee_last_name,
     employee_phone,
     employee_email,
-    employee_password,
-  } = updatedEmployeeData;
-
-  // If a new password is provided, hash it
-  if (employee_password) {
-    const salt = await bcrypt.genSalt(10);
-    hashedPassword = await bcrypt.hash(employee_password, salt);
-  }
+    employee_password, // Ensure this matches the name in request body
+    active_employee,
+    company_role_id,
+  } = employeeData;
 
   try {
-    // Update employee email
-    const query1 = `UPDATE employee SET employee_email = ? WHERE employee_id = ?`;
-    const result1 = await conn.query(query1, [employee_email, employee_id]);
-
-    if (result1.affectedRows === 0) {
-      console.error("No employee found with employee_id:", employee_id);
-      throw new Error("No employee found with the provided employee_id");
+    // Check if employee exists by ID
+    const [employee] = await conn.query(
+      "SELECT employee_email FROM employee WHERE employee_id = ?",
+      [id]
+    );
+    console.log(employee.employee_email);
+    if (employee.employee_email !== employee_email) {
+      return { status: 404, message: "Employee not found" };
     }
 
-    // Update employee info
-    const query2 = `
-            UPDATE employee_info 
-            SET employee_first_name = ?, employee_last_name = ?, employee_phone = ? 
-            WHERE employee_id = ?`;
-    const result2 = await conn.query(query2, [
-      employee_first_name,
-      employee_last_name,
-      employee_phone,
-      employee_id,
-    ]);
-
-    if (result2.affectedRows === 0) {
-      console.error(
-        "Failed to update employee info for employee_id:",
-        employee_id
-      );
-      throw new Error("Failed to update employee info");
+    // Encrypt password if provided
+    let hashedPassword = null;
+    if (employee_password) {
+      hashedPassword = await bcrypt.hash(employee_password, 10);
     }
 
-    // Update employee password if provided
-    if (hashedPassword) {
-      const query3 = `UPDATE employee_pass SET employee_password_hashed = ? WHERE employee_id = ?`;
-      const result3 = await conn.query(query3, [hashedPassword, employee_id]);
-
-      if (result3.affectedRows === 0) {
-        console.error(
-          "Failed to update employee password for employee_id:",
-          employee_id
-        );
-        throw new Error("Failed to update employee password");
-      }
-    }
-
-    return true; // Success
-  } catch (error) {
-    console.error("Service Error:", error.message);
-
-    return false; // Fail
-  }
-}
-// function fetch employee status
-async function getEmployeeStats() {
-  try {
-    const rows = await conn.query(`
-      SELECT 
-             COUNT(*) AS total_employees, 
-             SUM(active_employee) AS active_employees
-      FROM employee
-     
-    `);
-
-    // Mocking inactive employees as total - active (modify according to your real logic)
-    const totalEmployees = rows.map((row) => row.total_employees);
-    const activeEmployees = rows.map((row) => row.active_employees);
-    const inactiveEmployees = totalEmployees.map(
-      (total, index) => total - activeEmployees[index]
+    // Update employee details
+    await conn.query(
+      "UPDATE employee SET active_employee = ? WHERE employee_id = ?",
+      [active_employee, id]
     );
 
-    const data = {
-      months: rows.map((row) => row.month),
-      totalEmployees,
-      activeEmployees,
-      inactiveEmployees,
-    };
-    // Return the data
-    return data;
-  } catch (error) {
-    // Return an error
-    return error;
-  }
-}
-// create function to reset password
-async function resetEmployeePassword(employeeId) {
-  try {
-    const query = `UPDATE employee_pass SET employee_password_hashed = ? WHERE employee_id = ?`;
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash("123456", salt);
-    const result = await conn.query(query, [hashedPassword, employeeId]);
-    if (result.affectedRows === 0) {
-      throw new Error("Failed to reset employee password");
+    await conn.query(
+      "UPDATE employee_info SET employee_first_name = ?, employee_last_name = ?, employee_phone = ? WHERE employee_id = ?",
+      [employee_first_name, employee_last_name, employee_phone, id]
+    );
+
+    if (hashedPassword) {
+      await conn.query(
+        "UPDATE employee_pass SET employee_password_hashed = ? WHERE employee_id = ?",
+        [hashedPassword, id]
+      );
     }
 
-    return true; // Success
-  } catch (error) {
-    console.error("Service Error:", error.message);
-
-    return false; // Fail
-  }
-}
-//change password
-async function changePassword(employeeId, newPassword) {
-  try {
-    const query = `UPDATE employee_pass SET employee_password_hashed = ? WHERE employee_id = ?`;
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
-    const result = await conn.query(query, [hashedPassword, employeeId]);
-    if (result.affectedRows === 0) {
-      throw new Error("Failed to change employee password");
+    if (company_role_id) {
+      await conn.query(
+        "UPDATE employee_role SET company_role_id = ? WHERE employee_id = ?",
+        [company_role_id, id]
+      );
     }
 
-    return true; // Success
-  } catch (error) {
-    console.error("Service Error:", error.message);
+    return { status: 200, message: "Employee updated successfully" };
+  } catch (err) {
+    console.error("Error in updateEmployee service:", err);
+    throw err;
   }
 }
+
+
+
+async function deleteEmployee(id) {
+  try {
+    // Check if employee exists by ID
+    const [employee] = await conn.query(
+      "SELECT employee_email FROM employee WHERE employee_id = ?",
+      [id]
+    );
+
+    if (employee.length === 0) {
+      return { status: 404, message: "Employee not found" };
+    }
+
+    // Delete employee from related tables
+    await conn.query("DELETE FROM employee_role WHERE employee_id = ?", [id]);
+
+    await conn.query("DELETE FROM employee_pass WHERE employee_id = ?", [id]);
+
+    await conn.query("DELETE FROM employee_info WHERE employee_id = ?", [id]);
+
+    await conn.query("DELETE FROM employee WHERE employee_id = ?", [id]);
+
+    return { status: 200, message: "Employee deleted successfully" };
+  } catch (error) {
+    console.error("Error in deleteEmployee service:", error);
+    return { status: 500, message: "Internal server error" };
+  }
+}
+
 // Export the functions for use in the controller
 module.exports = {
   checkIfEmployeeExists,
   createEmployee,
   getEmployeeByEmail,
   getAllEmployees,
+  getEmployeeFromDb,
   updateEmployee,
   deleteEmployee,
-  getEmployeeStats,
-  resetEmployeePassword,
-  getCustomerByEmail,
-  getEmployeeById,
-  changePassword,
 };
+
+

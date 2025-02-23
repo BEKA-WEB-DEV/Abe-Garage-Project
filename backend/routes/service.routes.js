@@ -1,46 +1,21 @@
-// Import the express module
+//impport eaxpress
 const express = require("express");
-// Call the router method from express to create the router
+//call the router
 const router = express.Router();
-// Import the employee controller
+//import the service controller
 const serviceController = require("../controllers/service.controller");
-// Import middleware
+//import the auth middleware
 const authMiddleware = require("../middlewares/auth.middleware");
-//create a get all services route
-// router.get("/api/services", serviceController.getAllServices);
 
-router.get(
-  "/api/services",
-  // [authMiddleware.verifyToken, authMiddleware.isManager_or_Admin],
-  serviceController.getAllServices
-);
-router.get(
-  "/api/service/:id",
-  [authMiddleware.verifyToken, authMiddleware.isAdmin],
-  serviceController.getServiceById
-);
-
-router.post(
-  "/api/service",
-  [authMiddleware.verifyToken, authMiddleware.isAdmin],
-  serviceController.createService
-);
-router.put(
-  "/api/service/:service_id",
-  [authMiddleware.verifyToken, authMiddleware.isAdmin],
-  serviceController.updateServiceController
-);
-router.delete(
-  "/api/service/:id",
-  [authMiddleware.verifyToken, authMiddleware.isAdmin],
-  serviceController.deactivateService
-);
-
-// router.get(
-//   "/api/customer/services",
-//   // [authMiddleware.verifyToken], // Ensure the user is authenticated
-//   serviceController.getCustomerServices
-// );
-
-// Export the router
+//create a route to handle the add service request on post
+router.post("/api/service",[authMiddleware.verifyToken, authMiddleware.isAdmin], serviceController.createService);
+//create a route to handle the get all services request on get
+router.get("/api/services",[authMiddleware.verifyToken], serviceController.getAllServices);
+//create a route to handle the get single service request on get
+router.get("/api/service/:id", [authMiddleware.verifyToken, authMiddleware.isAdmin], serviceController.getServiceById);
+//create a route to handle the update service request on put
+router.put("/api/service/", [authMiddleware.verifyToken, authMiddleware.isAdmin], serviceController.updateService);
+//create a route to handle the delete service request on delete
+router.delete("/api/service/:id",[authMiddleware.verifyToken, authMiddleware.isAdmin], serviceController.deleteService);
+//export the router
 module.exports = router;

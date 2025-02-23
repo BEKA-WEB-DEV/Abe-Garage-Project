@@ -1,371 +1,358 @@
-// Import the order service
-const orderService = require("../services/order.service");
+//import order model
+const Order = require("../services/order.service");
 
-// Function to handle adding a new order
-async function addOrder(req, res) {
-  try {
-    const orderData = req.body;
 
-    if (
-      !orderData.customer_id ||
-      !orderData.employee_id ||
-      !orderData.vehicle_id ||
-      !orderData.order_services ||
-      !orderData.Order_Date
-    ) {
-      return res.status(400).json({
+
+  async function createOrder (req, res) {
+  // Destructure request body
+  const {
+    customer_id,
+    additional_request,
+    employee_id,
+    vehicle_id,
+    service_id,
+    estimated_completion_date,
+    completion_date,
+    order_description,
+    order_completed,
+    order_services,
+    order_total_price,
+  } = req.body;
+
+  // Validation
+  if (
+    !customer_id ||
+    !employee_id ||
+    !vehicle_id ||
+    !service_id ||
+    !additional_request||
+    !estimated_completion_date ||
+    order_completed === undefined ||
+    !order_services||
+    !order_total_price
+    
+  ) {
+    return res
+      .status(400)
+      .json({
         error: "Bad Request",
         message: "Please provide all required fields",
       });
-    }
+  }
 
-    // Add the order using the service
-    const newOrder = await orderService.addOrder(orderData);
+  try {
+    // Create the order
+    const result = await Order.createOrder({
+      customer_id,
+      additional_request,
+      employee_id,
+      vehicle_id,
+      service_id,
+      estimated_completion_date,
+      completion_date,
+      order_description,
+      order_completed,
+      order_services,
+      order_total_price,
+    });
 
-    // Check if the order was added successfully
-    if (newOrder.status === "success") {
+    if (result) {
       res.status(201).json({
         message: "Order created successfully",
         success: "true",
+        data: result.id,
       });
     } else {
-      res.status(500).json({
-        error: "Internal Server Error",
-        message: "An unexpected error occurred.",
-      });
+      res
+        .status(500)
+        .json({
+          error: "Internal Server Error",
+          message: "An unexpected error occurred.",
+        });
     }
   } catch (error) {
-    console.error("Error adding order:", error);
-    res.status(500).json({
-      error: "Internal Server Error",
-      message: "An unexpected error occurred.",
-    });
-  }
-}
-
-// Function to handle retrieving all orders
-// order.controller.js
-const getAllOrders = async (req, res) => {
-  try {
-    const orders = await orderService.getAllOrders();
-
-    // If orders were retrieved successfully, return them
-    res.status(200).json({
-      status: "success",
-      data: orders,
-    });
-  } catch (error) {
-    console.error("Error retrieving orders:", error);
-    res.status(500).json({
-      error: "Internal Server Error",
-      message: "An unexpected error occurred while retrieving orders.",
-    });
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        error: "Internal Server Error",
+        message: "An unexpected error occurred.",
+    
+      });
   }
 };
 
-// Function to handle retrieving an order by ID
-async function getOrderById(req, res) {
+
+//create a function to handle the get all orders request on get 
+ async function getAllOrders (req, res) {
   try {
-    const orderId = req.params.orderId; // Extract orderId from URL parameters
-
-    if (!orderId) {
-      // Return 400 Bad Request if no orderId is provided
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "Order ID is required",
-      });
-    }
-
-    // Fetch the order by ID from your service layer
-    const order = await orderService.getOrderById(orderId);
-
-    if (!order) {
-      // Return 404 Not Found if the order doesn't exist
-      return res.status(404).json({
-        error: "Not Found",
-        message: "Order not found",
-      });
-    }
-
-    // If order is found, return it with 200 OK status
-    return res.status(200).json(order);
+    const orders = await Order.getAllOrders();
+    res.status(200).json(orders);
   } catch (error) {
-    // Log the error for debugging purposes
-    console.error("Error retrieving order:", error);
-
-    // Return 500 Internal Server Error in case of unexpected issues
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "An unexpected error occurred.",
-    });
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        error: "Internal Server Error",
+        message: "An unexpected error occurred.",
+      });
   }
-}
+};
+//create a function to handle the get single order request on get
+ async  function getOrderById (req, res) {
+  try {
+    const orderId = req.params.id;
+    const result = await Order.getOrderById(orderId);
+console.log(result);
+    if (result.status === 404) {
+      return res
+        .status(404)
+        .json({ error: "Not Found", message: "Order not found" });
+    }
 
-// Controller function to handle updating an order
+    if (result.status === 500) {
+      return res
+        .status(500)
+        .json({
+          error: "Internal Server Error",
+          message: "An unexpected error occurred.",
+        });
+    }
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        error: "Internal Server Error",
+        message: "An unexpected error occurred.",
+      });
+  }
+};
+
+
+
 async function updateOrder(req, res) {
   try {
-    // Extract the order data from the request body
+    // Extract fields from the request body
     const {
-      order_id,
-      customer_id,
-      employee_id,
-      vehicle_id,
-      service_id,
+      id, // This is the order_id
+      order_services = [], // Ensure it's an array
       order_date,
-      estimated_completion_date,
-      completion_date,
-      order_description,
       order_completed,
-      order_services,
     } = req.body;
 
-    // Input validation
-    if (
-      !order_id ||
-      !customer_id ||
-      !employee_id ||
-      !vehicle_id ||
-      !order_date ||
-      !order_services ||
-      typeof order_completed === "undefined"
-    ) {
+    // Validate required fields
+    if (!id || typeof order_completed === "undefined") {
       return res.status(400).json({
         error: "Bad Request",
         message: "Please provide all required fields",
       });
     }
 
-    // Call the service to update the order
-    const result = await orderService.updateOrder({
-      order_id,
-      customer_id,
-      employee_id,
-      vehicle_id,
-      service_id,
-      order_date,
-      estimated_completion_date,
-      completion_date,
-      order_description,
-      order_completed,
+    // Call the service function
+    const result = await Order.updateOrderInDatabase({
+      id,
       order_services,
+      order_date,
+      order_completed,
     });
 
-    // Handle the response based on the service result
-    if (result.status === "success") {
+    // Handle response based on the result
+    if (result.status === 200) {
       return res.status(200).json({
-        message: "Order updated successfully",
-        success: true,
-      });
-    } else if (result.status === "fail" && result.error === "not_found") {
-      return res.status(404).json({
-        error: "Not Found",
-        message: "Order not found",
+        message: result.message,
+        success: "true",
       });
     } else {
-      return res.status(500).json({
-        error: "Internal Server Error",
-        message: "An unexpected error occurred.",
+      return res.status(result.status).json({
+        error: result.message,
+        message: result.message,
       });
     }
   } catch (error) {
-    console.error("Update Order Error: ", error);
-    return res.status(500).json({
+    console.error("Error updating order:", error);
+    res.status(500).json({
       error: "Internal Server Error",
       message: "An unexpected error occurred.",
     });
   }
 }
 
-// Delete order controller function
-async function deleteOrder(req, res) {
+
+
+//create a function to handle the delete order request on delete  
+async function deleteOrder(req, res, next) {
   try {
-    // Get the order ID from the request params
-    const orderId = req.params.id;
+    // Call the deleteOrder method from the order service
+    const result = await Order.deleteOrder(req.params.id);
 
-    // Call the order service to delete the order
-    const result = await orderService.deleteOrderById(orderId);
-
-    // If the order was not found, return a 404 response
-    if (!result) {
-      return res.status(404).json({
-        error: "Not Found",
-        message: "Order not found",
+    // Check if the order was deleted successfully
+    if (result.status === 200) {
+      // If successful, send a response to the client
+      res.status(200).json({
+        message: result.message, // Make sure to return only the message part
+      });
+    } else {
+      // If unsuccessful, send a response to the client
+      res.status(result.status).json({
+        message: result.message, // Return the error message
       });
     }
-
-    // If the order is successfully deleted, return a 200 response
-    return res.status(200).json({
-      message: "Order deleted successfully",
-    });
   } catch (error) {
     // Handle unexpected errors
-    console.error(error);
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "An unexpected error occurred.",
-    });
-  }
-}
-// get order ny employee Id
-async function getTasksByEmployeeId(req, res) {
-  try {
-    const employeeId = req.params.EmployeeId; // Extract orderId from URL parameters
-    console.log(employeeId);
-    if (!employeeId) {
-      // Return 400 Bad Request if no orderId is provided
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "Order ID is required",
-      });
-    }
-
-    // Fetch the order by ID from your service layer
-    const order = await orderService.getOrderByEmployeeId(employeeId);
-
-    if (!order) {
-      // Return 404 Not Found if the order doesn't exist
-      return res.status(404).json({
-        error: "Not Found",
-        message: "Order not found",
-      });
-    }
-
-    // If order is found, return it with 200 OK status
-    return res.status(200).json(order);
-  } catch (error) {
-    // Log the error for debugging purposes
-    console.error("Error retrieving order:", error);
-
-    // Return 500 Internal Server Error in case of unexpected issues
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "An unexpected error occurred.",
-    });
-  }
-}
-
-//get by costumer id
-async function getOredrByCustumerId(req, res) {
-  try {
-    const costumer = req.params.cutomerId; // Extract orderId from URL parameters
-    if (!costumer) {
-      // Return 400 Bad Request if no orderId is provided
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "Order ID is required",
-      });
-    }
-
-    // Fetch the order by ID from your service layer
-    const OrderData = await orderService.getOrderByCustomerId(costumer);
-    if (!OrderData) {
-      // Return 404 Not Found if the order doesn't exist
-      return res.status(404).json({
-        error: "Not Found",
-        message: "Order not found",
-      });
-    }
-
-    // If order is found, return it with 200 OK status
-    return res.status(200).json(OrderData);
-  } catch (error) {
-    // Log the error for debugging purposes
-    console.error("Error retrieving order:", error);
-
-    // Return 500 Internal Server Error in case of unexpected issues
-    return res.status(500).json({
-      error: "Internal Server Error",
-      message: "An unexpected error occurred.",
-    });
-  }
-}
-// order checked controller
-async function orderServiceCheck(req, res) {
-  try {
-    const { serviceId, orderId, serviceCompleted } = req.body;
-
-    // Validate required fields
-    if (!serviceId || !orderId || serviceCompleted === undefined) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message:
-          "Invalid input. serviceId, orderId, and serviceCompleted are required.",
-      });
-    }
-
-    // Call the service to update the database
-    const updateSuccess = await orderService.orderServiceCheck({
-      serviceId,
-      orderId,
-      serviceCompleted,
-    });
-
-    if (updateSuccess) {
-      res.status(200).json({
-        success: true,
-        message: "Service status updated successfully",
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        message: "Failed to update service status",
-      });
-    }
-  } catch (error) {
-    console.error("Controller Error:", error.message);
+    console.error("Error in deleteOrder controller:", error);
     res.status(500).json({
-      error: "Internal Server Error",
-      message: error.message,
+      message: "Internal server error",
     });
   }
 }
-// order completed controller
-async function orderServiceCompleted(req, res) {
+
+
+
+
+async function getCustomerInfo(req, res) {
   try {
-    const { orderId } = req.body;
+    const customerIds = req.body.customer_ids;
 
-    // Validate required fields
-    if (!orderId === undefined) {
-      return res.status(400).json({
-        error: "Bad Request",
-        message:
-          "Invalid input. serviceId, orderId, and serviceCompleted are required.",
-      });
+    if (
+      !customerIds ||
+      !Array.isArray(customerIds) ||
+      customerIds.length === 0
+    ) {
+      return res.status(400).json({ error: "Invalid customer_ids" });
     }
 
-    // Call the service to update the database
-    const updateSuccess = await orderService.OrderCompleted({
-      orderId,
-    });
-
-    if (updateSuccess) {
-      res.status(200).json({
-        success: true,
-        message: "Service status updated successfully",
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        message: "Failed to update service status",
-      });
-    }
+    // Fetch customer info from the database
+    const customerInfo = await Order.getCustomerInfoFromDb(customerIds);
+    res.status(200).json(customerInfo);
   } catch (error) {
-    console.error("Controller Error:", error.message);
-    res.status(500).json({
-      error: "Internal Server Error",
-      message: error.message,
-    });
+    console.error("Error fetching customer info:", error);
+    res.status(500).json({ error: "Database query error" });
   }
 }
-// Export the controller function
+
+
+//create a route to handle the get vehicle info request
+async function getVehicleInfo(req, res) {
+  try {
+    const vehicleIds = req.body.vehicle_ids;
+
+    if (!vehicleIds || !Array.isArray(vehicleIds) || vehicleIds.length === 0) {
+      return res.status(400).json({ error: "Invalid vehicle_ids" });
+    }
+
+    // Fetch vehicle info from the database
+    const vehicleInfo = await Order.getVehicleById(vehicleIds);
+
+    res.status(200).json(vehicleInfo);
+  } catch (error) {
+    console.error("Error fetching vehicle info:", error);
+    res.status(500).json({ error: "Database query error" });
+  }
+}
+
+//create a route to handle the employee info request
+async function getEmployeeInfo(req, res) {
+  const { order_ids } = req.body;
+
+  if (!Array.isArray(order_ids) || order_ids.length === 0) {
+    return res.status(400).json({ error: "An array of order IDs is required" });
+  }
+
+  try {
+    // Call the service function to get employee info
+    const employeeInfo = await Order.getEmployeeInfoByOrderIds(order_ids);
+
+    // Check if any employee info was found
+    if (employeeInfo.length === 0) {
+      return res.status(404).json({ error: "Employees not found" });
+    }
+
+    // Send the employee info in the response
+    res.status(200).json(employeeInfo);
+  } catch (error) {
+    console.error("Error fetching employee info:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
+
+
+//create a route to handle the get service info request
+async function getServiceInfo(req, res) {
+  const { id } = req.params; // Extract 'id' from URL parameters
+  console.log(id);
+  if (!id) {
+    return res.status(400).json({ error: "Order ID is required" });
+  }
+
+  try {
+    // Call the service function to get service info
+    const serviceInfo = await Order.getServiceInfoByOrderId(id);
+    // Check if any service info was found
+    if (serviceInfo.length === 0) {
+      return res.status(404).json({ error: "Service not found" });
+    }
+    // Send the service info in the response
+    res.status(200).json(serviceInfo);
+  } catch (error) {
+    console.error("Error fetching service info:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+//create a function to get coustomer and vehicle info
+async function getCustomerAndVehicleInfo(req, res) {
+  const {id}=req.params;
+  try {
+   const customerAndVehicleInfo = await Order.getCustomerAndVehicleInfo(id);
+    res.status(200).json(customerAndVehicleInfo);
+  } catch (error) {   
+    console.error("Error fetching customer and vehicle info:", error);
+    res.status(500).json({ error: "Internal server error" });
+  } 
+}   
+
+
+//create a function to get all orders done by a customer
+async function getOrdersByCustomerId(req,res) {
+
+  const { customer_id } = req.params; // Extract 'customer_id' from request body  
+console.log(customer_id);
+  if (!customer_id) { 
+    return res.status(400).json({ error: "Customer ID is required" });
+  }
+  try {
+    // Call the service function to get orders by customer
+    const orders = await Order.getOrdersByCustomerId(customer_id);
+    // Check if any orders were found
+    if (orders.length === 0) {
+      return res.status(404).json({ error: "Orders not found" });
+    }
+    // Send the orders in the response
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error); 
+    res.status(500).json({ error: "Internal server error" });
+  }  
+  
+}
+
+
+//export the functions    
 module.exports = {
-  addOrder,
+  createOrder,
   getAllOrders,
   getOrderById,
   updateOrder,
   deleteOrder,
-  getTasksByEmployeeId,
-  getOredrByCustumerId,
-  orderServiceCheck,
-  orderServiceCompleted,
+  getCustomerInfo,
+  getVehicleInfo,
+  getEmployeeInfo,
+  getServiceInfo,
+  getOrdersByCustomerId,
+  getCustomerAndVehicleInfo
 };

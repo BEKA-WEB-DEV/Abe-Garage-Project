@@ -1,34 +1,18 @@
-// Import the express module
+//import express
 const express = require("express");
-// Call the router method from express to create the router
+//call the router method from express to create the router  
 const router = express.Router();
-// Import the customer controller
+//import the customer controller
 const customerController = require("../controllers/customer.controller");
+//import the auth middleware
 const authMiddleware = require("../middlewares/auth.middleware");
-//create a route for the customer controller request a post request
-router.post(
-  "/api/customer",
-  // [authMiddleware.verifyToken, authMiddleware.isAdmin],
-  customerController.createCustomer
-);
-//create a route for the customer controller request a get all customers request
-router.get("/api/customers", customerController.getAllCustomers);
-//create a route for the customer controller request a get customer by id request
-router.get("/api/customer/:id", customerController.getCustomerById);
-//create a route for the customer controller request a put request
-router.put(
-  "/api/customer/:id",
-  // [authMiddleware.verifyToken, authMiddleware.isAdmin],
-  customerController.updateCustomer
-);
-//create a route for the customer controller request a delete request
-router.delete(
-  "/api/customer/:id",
-  // [authMiddleware.verifyToken, authMiddleware.isAdmin],
-  customerController.deleteCustomer
-);
-//route get customer status
-router.get("/api/customers/stats", customerController.getCustomerByStatus);
-
+//create a route to handle the add customer request on post
+router.post("/api/customer", [authMiddleware.verifyToken, authMiddleware.isAdmin], customerController.createCustomer);
+//create a route to handle the get all customers request on get
+router.get("/api/customers", [authMiddleware.verifyToken, authMiddleware.isAdmin], customerController.getAllCustomers);
+//create a route to handle the get single customer request on get
+router.get("/api/customer/:id", [authMiddleware.verifyToken, authMiddleware.isAdmin], customerController.getCustomerById);
+//create a route to handle the update customer request on put
+router.put("/api/customer/", [authMiddleware.verifyToken, authMiddleware.isAdmin], customerController.updateCustomer);
 //export the router
-module.exports = router;
+module.exports = router;                                                  

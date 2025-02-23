@@ -1,4 +1,4 @@
-// src/Components/NewsForm/NewsForm.js
+// src/components/NewsForm/NewsForm.js
 import React, { useState } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import axios from "axios"; // For sending HTTP requests

@@ -1,5 +1,5 @@
 import React from "react";
-import Services from "../Components/Services/Services.jsx";
+import Services from "../components/Services/Services.jsx";
 function Services() {
   return <Services />;
 }

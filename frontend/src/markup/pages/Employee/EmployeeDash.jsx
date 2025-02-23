@@ -1,6 +1,6 @@
 import React from "react";
-import EmployeeMenu from "../../Components/Employee/EmployeeMenu/EmployeeMenu";
-import EmployeeDashboard from "../../Components/Employee/EmployeeDashboard";
+import EmployeeMenu from "../../components/Employee/EmployeeMenu/EmployeeMenu";
+import EmployeeDashboard from "../../components/Employee/EmployeeDashboard";
 function EmployeeDash() {
   return (
     <>

@@ -1,5 +1,5 @@
 import React from "react";
-import CustumerMenu from "../../Components/CustomerPage/CustomerMenu/CustumerMenu";
+import CustumerMenu from "../../components/CustomerPage/CustomerMenu/CustumerMenu";
 
 function CustomerDash() {
   const styles = {

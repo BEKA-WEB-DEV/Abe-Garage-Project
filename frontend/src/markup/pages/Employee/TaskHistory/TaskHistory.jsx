@@ -1,6 +1,6 @@
 import React from "react";
-import EmployeeMenu from "../../../Components/Employee/EmployeeMenu/EmployeeMenu";
-import EmployeeHistory from "../../../Components/Employee/Taskhistory/EmployeeHistory";
+import EmployeeMenu from "../../../components/Employee/EmployeeMenu/EmployeeMenu";
+import EmployeeHistory from "../../../components/Employee/Taskhistory/EmployeeHistory";
 
 function TaskHistory() {
   return (

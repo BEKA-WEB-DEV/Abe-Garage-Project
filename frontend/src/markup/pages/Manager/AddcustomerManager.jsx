@@ -1,6 +1,6 @@
 import React from "react";
-import ManagerMenu from "../../Components/Manager/ManagerMenu/ManagerMenu";
-import AddCustomerForm from "../../Components/Admin/AddCustomer/AddCustomerForm";
+import ManagerMenu from "../../components/Manager/ManagerMenu/ManagerMenu";
+import AddCustomerForm from "../../components/Admin/AddCustomer/AddCustomerForm";
 
 function AddcustomerManager() {
   return (

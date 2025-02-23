@@ -1,6 +1,6 @@
 import React from "react";
-import CustumerMenu from "../../../Components/CustomerPage/CustomerMenu/CustumerMenu";
-import MyOrders from "../../../Components/CustomerPage/CutomerOrders/MyOrders";
+import CustumerMenu from "../../../components/CustomerPage/CustomerMenu/CustumerMenu";
+import MyOrders from "../../../components/CustomerPage/CutomerOrders/MyOrders";
 
 function MyOrdersList() {
   return (

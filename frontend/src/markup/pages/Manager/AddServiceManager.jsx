@@ -1,6 +1,6 @@
 import React from "react";
-import ManagerMenu from "../../Components/Manager/ManagerMenu/ManagerMenu";
-import ServiceManagment from "../../Components/Admin/ServiceManagment/ServiceManagment";
+import ManagerMenu from "../../components/Manager/ManagerMenu/ManagerMenu";
+import ServiceManagment from "../../components/Admin/ServiceManagment/ServiceManagment";
 function AddServiceManager() {
   return (
     <>

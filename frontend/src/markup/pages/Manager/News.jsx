@@ -1,6 +1,6 @@
 import React from "react";
-import ManagerMenu from "../../Components/Manager/ManagerMenu/ManagerMenu";
-import NewsForm from "../../Components/News/NewsForm";
+import ManagerMenu from "../../components/Manager/ManagerMenu/ManagerMenu";
+import NewsForm from "../../components/News/NewsForm";
 function News() {
   return (
     <>

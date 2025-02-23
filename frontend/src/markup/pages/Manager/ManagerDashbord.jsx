@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import ManagerMenu from "../../Components/Manager/ManagerMenu/ManagerMenu";
-import StatsDashboard from "../../Components/StatsDashboard/StatsDashboard";
+import ManagerMenu from "../../components/Manager/ManagerMenu/ManagerMenu";
+import StatsDashboard from "../../components/StatsDashboard/StatsDashboard";
 
 function ManagerDashbord() {
   return (

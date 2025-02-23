@@ -1,6 +1,6 @@
 import React from "react";
-import CustumerMenu from "../../../Components/CustomerPage/CustomerMenu/CustumerMenu";
-import MyHistory from "../../../Components/CustomerPage/CustomerHistory/MyHistory";
+import CustumerMenu from "../../../components/CustomerPage/CustomerMenu/CustumerMenu";
+import MyHistory from "../../../components/CustomerPage/CustomerHistory/MyHistory";
 
 function MyHistoryList() {
   return (

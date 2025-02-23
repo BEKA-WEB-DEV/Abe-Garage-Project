@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import img1 from "../../../Assets/img/Gif.gif";
-import img2 from "../../../Assets/img/10001.jpg";
+import img1 from "../../../assets/images/Gif.gif";
+import img2 from "../../../assets/images/001.jpg";
 function ServicePage() {
   const [blogs, setBlogs] = useState([]);
 

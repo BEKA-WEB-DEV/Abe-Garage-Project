@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react'
 // import HeaderPage from '../HeaderPage/HeaderPage';
-import img9 from "../../../Assets/abe/banner1.jpg";
-import img10 from '../../../Assets/img/icons/10.png';
-import img11 from '../../../Assets/img/icons/11.png';
-import img12 from '../../../Assets/img/icons/12.png';
+import img9 from "../../../assets/images/banner/banner.jpg";
+import img10 from '../../../assets/images/icons/10.png';
+import img11 from '../../../assets/images/icons/11.png';
+import img12 from '../../../assets/images/icons/12.png';
 
 function ContactUs() {
  

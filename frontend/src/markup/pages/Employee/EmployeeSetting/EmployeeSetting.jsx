@@ -1,6 +1,6 @@
 import React from "react";
-import EmployeeMenu from "../../../Components/Employee/EmployeeMenu/EmployeeMenu";
-import EmpSetting from "../../../Components/Employee/EmpSetting/EmpSetting";
+import EmployeeMenu from "../../../components/Employee/EmployeeMenu/EmployeeMenu";
+import EmpSetting from "../../../components/Employee/EmpSetting/EmpSetting";
 function EmployeeSetting() {
   return (
     <>

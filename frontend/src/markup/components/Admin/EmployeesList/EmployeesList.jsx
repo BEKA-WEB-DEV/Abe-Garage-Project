@@ -15,7 +15,7 @@ import {
 } from "react-bootstrap";
 import { format } from "date-fns";
 import { FaEdit, FaTrash, FaPrint, FaEye, FaKey } from "react-icons/fa";
-import { useAuth } from "../../../../Contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import employeeService from "../../../../services/employee.service";
 import "./EmployeesList.css";
 

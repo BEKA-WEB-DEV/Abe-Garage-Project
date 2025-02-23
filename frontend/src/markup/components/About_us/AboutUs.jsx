@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Parallax } from "react-parallax";
 import "./Aboutus.css";
-import img1 from "../../../Assets/img/effect/1(1).jpg";
-import img2 from "../../../Assets/img/effect/2.jpg";
-import img3 from "../../../Assets/img/effect/3.jpg";
-import img4 from "../../../Assets/img/effect/4.jpg";
-import img5 from "../../../Assets/img/effect/5.jpg";
-import img6 from "../../../Assets/img/effect/6.jpg";
-import img7 from "../../../Assets/img/icons/7.png";
+import img1 from "../../../assets/img/effect/1.jpg";
+import img2 from "../../../assets/img/effect/2.jpg";
+import img3 from "../../../assets/img/effect/3.jpg";
+import img4 from "../../../assets/img/effect/4.jpg";
+import img5 from "../../../assets/img/effect/5.jpg";
+import img6 from "../../../assets/img/effect/6.jpg";
+import img7 from "../../../assets/img/icons/7.png";
 import { Link } from "react-router-dom";
 
 function AboutUs() {

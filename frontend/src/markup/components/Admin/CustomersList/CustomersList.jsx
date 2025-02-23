@@ -10,7 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import customerService from "../../../../services/customer.service";
 import { format } from "date-fns";
-import { useAuth } from "../../../../Contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import CustomerDetail from "../CustomerDetail/CustomerDetail";
 import "./CustomersList.css";

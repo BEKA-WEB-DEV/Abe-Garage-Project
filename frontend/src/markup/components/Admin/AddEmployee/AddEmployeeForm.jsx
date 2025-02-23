@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button, Alert, Form, Row, Col } from "react-bootstrap";
 import employeeService from "../../../../services/employee.service";
-import { useAuth } from "../../../../Contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import "./AddEmployeeForm.css";
 
 function AddEmployeeForm() {

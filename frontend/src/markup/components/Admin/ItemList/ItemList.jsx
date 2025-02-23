@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-import { useAuth } from "../../../../Contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import itemService from "../../../../services/item.service";
 import { format } from "date-fns";
 import "../ItemList/ItemList.css";

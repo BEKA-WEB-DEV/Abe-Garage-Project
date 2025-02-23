@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import getAuth from "../../../../util/employeeAuthHeader";
 import "./AddService.css";
-import { useAuth } from "../../../../Contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import serviceService from "../../../../services/service.service";
 const AddService = () => {
   const [serviceName, setServiceName] = useState("");

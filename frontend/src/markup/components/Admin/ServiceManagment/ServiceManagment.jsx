@@ -10,7 +10,7 @@ import {
   Pagination,
 } from "react-bootstrap";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import { useAuth } from "../../../../Contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import serviceService from "../../../../services/service.service";
 import { CSSTransition } from "react-transition-group";
 import "./ServiceList.css";

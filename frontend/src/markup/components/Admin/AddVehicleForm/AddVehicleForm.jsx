@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button, Modal, Alert, Row, Col } from "react-bootstrap";
 import vehicleService from "../../../../services/vehicle.service"; // Adjust the path as needed
-import { useAuth } from "../../../../Contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import { useNavigate } from "react-router";
 
 function AddVehicleForm({ show, handleClose, customerId }) {

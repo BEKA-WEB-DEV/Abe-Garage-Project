@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, Button, InputGroup, Col, Row, Alert } from "react-bootstrap";
 import { Box, Calendar, Cash } from "react-bootstrap-icons";
 import itemService from "../../../../services/item.service";
-import { useAuth } from "../../../../Contexts/AuthContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 function AddItemForm(props) {
   const [item_name, setName] = useState("");

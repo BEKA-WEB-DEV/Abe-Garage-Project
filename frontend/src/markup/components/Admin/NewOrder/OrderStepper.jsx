@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Container, Row, Col, Button, ButtonGroup } from "react-bootstrap";
 import Search from "./StepsToOrder/Search";
 import AddOrder from "./StepsToOrder/AddOrder";
-import CompleteOrder from "./StepsToOrder/CompleteOrder";
+import CompleteOrder from "./StepsToOrder/Completeorder";
 import AssignItems from "./StepsToOrder/AssignItems/AssignItems";
 import "./neworder.css"; // Custom styles
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import getAuth from "../util/employeeAuthHeader"; // Ensure this utility function is correctly implemented
+import getAuth from "../util/getAuth"; // Ensure this utility function is correctly implemented
 
 const AuthContext = React.createContext();
 

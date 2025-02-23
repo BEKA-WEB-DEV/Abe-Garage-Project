@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import getAuth from "../../../../util/employeeAuthHeader";
+import getAuth from "../../../../util/getAuth";
 import "./AddService.css";
 import { useAuth } from "../../../../contexts/AuthContext";
 import serviceService from "../../../../services/service.service";

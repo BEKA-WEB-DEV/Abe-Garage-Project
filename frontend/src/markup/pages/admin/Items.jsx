@@ -1,6 +1,6 @@
 import React from "react";
-import AdminMenu from "../../Components/Admin/AdminMenu/AdminMenu";
-import ItemList from "../../Components/Admin/ItemList/ItemList";
+import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
+import ItemList from "../../components/Admin/ItemList/ItemList";
 
 function Items() {
   return (

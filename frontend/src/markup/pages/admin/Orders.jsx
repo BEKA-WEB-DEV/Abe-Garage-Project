@@ -1,6 +1,6 @@
 import React from "react";
-import AdminMenu from "../../Components/Admin/AdminMenu/AdminMenu";
-import Listorder from "../../Components/Admin/ListOrder/Listorder";
+import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
+import Listorder from "../../components/Admin/ListOrder/Listorder";
 
 function Orders() {
   return (

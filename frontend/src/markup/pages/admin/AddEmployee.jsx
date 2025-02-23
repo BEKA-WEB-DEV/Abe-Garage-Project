@@ -1,8 +1,8 @@
 import React from "react";
 // Import the AddEmployeeForm component
-import AddEmployeeForm from "../../../Markup/Components/Admin/AddEmployee/AddEmployeeForm";
+import AddEmployeeForm from "../../components/Admin/AddEmployee/AddEmployeeForm";
 // Import the AdminMenu component
-import AdminMenu from "../../Components/Admin/AdminMenu/AdminMenu";
+import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
 
 function AddEmployee() {
   return (

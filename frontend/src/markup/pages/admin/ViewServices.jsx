@@ -1,6 +1,6 @@
 import React from "react";
-import AdminMenu from "../../Components/Admin/AdminMenu/AdminMenu";
-import ServiceManagment from "../../Components/Admin/ServiceManagment/ServiceManagment";
+import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
+import ServiceManagment from "../../components/Admin/ServiceManagment/ServiceManagment";
 
 function ViewServices() {
   return (

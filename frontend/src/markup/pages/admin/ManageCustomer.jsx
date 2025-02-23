@@ -1,6 +1,6 @@
 import React from "react";
-import AdminMenu from "../../Components/Admin/AdminMenu/AdminMenu";
-import CustomerEdit from "../../Components/Admin/CusromerEdit/CustomerEdit";
+import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
+import CustomerEdit from "../../components/Admin/CusromerEdit/CustomerEdit";
 
 function ManageCustomer() {
   return (

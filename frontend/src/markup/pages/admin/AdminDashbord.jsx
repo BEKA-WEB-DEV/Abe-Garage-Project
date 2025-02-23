@@ -1,7 +1,7 @@
 import React from "react";
-import AdminMenu from "../../Components/Admin/AdminMenu/AdminMenu";
+import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
 
-import StatsDashboard from "../../Components/StatsDashboard/StatsDashboard";
+import StatsDashboard from "../../components/StatsDashboard/StatsDashboard";
 import "./Addcustomer.css";
 function AdminDashbord() {
   return (

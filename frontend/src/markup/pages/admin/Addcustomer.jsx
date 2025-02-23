@@ -1,6 +1,6 @@
 import React from "react";
-import AdminMenu from "../../Components/Admin/AdminMenu/AdminMenu";
-import AddCustomerForm from "../../Components/Admin/AddCustomer/AddCustomerForm";
+import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
+import AddCustomerForm from "../../components/Admin/AddCustomer/AddCustomerForm";
 
 function Addcustomer() {
   return (

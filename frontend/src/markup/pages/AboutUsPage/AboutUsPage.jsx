@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import img9 from "../../../Assets/abe/10001.jpg";
-import imgT4 from "../../../Assets/abe/10004.png";
+import img9 from "../../../assets/images/service/10001.jpg";
+import imgT4 from "../../../assets/images/service/10004.png";
 import "./aboutUsPage.css";
 
 function AboutUsPage() {

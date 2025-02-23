@@ -1,6 +1,6 @@
 import React from "react";
-import AdminMenu from "../../Components/Admin/AdminMenu/AdminMenu";
-import EmployeesList from "../../Components/Admin/EmployeesList/EmployeesList";
+import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
+import EmployeesList from "../../components/Admin/EmployeesList/EmployeesList";
 
 function Employees() {
   return (

@@ -1,6 +1,6 @@
-import React from "react";
-import DetailSingleOrder from "../../Components/Admin/DetailSingleOrder/DetailSingleOrder";
-import AdminMenu from "../../Components/Admin/AdminMenu/AdminMenu";
+import React from "react"
+import DetailSingleOrder from "../../components/Admin/DetailSingleOrder/DetailSingleOrder";
+import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
 
 function SingleOrder() {
   return (

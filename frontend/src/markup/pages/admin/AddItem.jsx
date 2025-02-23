@@ -1,6 +1,6 @@
 import React from "react";
-import AdminMenu from "../../Components/Admin/AdminMenu/AdminMenu";
-import AddItemForm from "../../Components/Admin/AddItem/AddItemForm";
+import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
+import AddItemForm from "../../components/Admin/AddItem/AddItemForm";
 
 function AddItem() {
   return (

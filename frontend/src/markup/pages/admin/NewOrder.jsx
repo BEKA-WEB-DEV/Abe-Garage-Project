@@ -1,6 +1,6 @@
 import React from "react";
-import AdminMenu from "../../Components/Admin/AdminMenu/AdminMenu";
-import OrderStepper from "../../Components/Admin/NewOrder/OrderStepper";
+import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
+import OrderStepper from "../../components/Admin/NewOrder/OrderStepper";
 function NewOrder() {
   return (
     <>

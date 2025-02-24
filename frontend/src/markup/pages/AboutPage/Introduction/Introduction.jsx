@@ -22,7 +22,7 @@ const Introduction = () => {
           expectations with every visit.
         </p>
       </div>
-      <div className="image">
+      <div className="image-frt">
         <img src={introImage} alt="Mechanic working" />
       </div>
     </section>

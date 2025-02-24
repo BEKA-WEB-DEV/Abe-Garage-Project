@@ -21,7 +21,7 @@ function Contact() {
               <div className="work-img">
                 <iframe
                   className="contact"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127590.063874522!2d38.65212029210835!3d9.039722089328936!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x164b85fccefe5fdf%3A0xf0673d57cf7ddf07!2sAddis%20Ababa%2C%20Ethiopia!5e0!3m2!1sen!2set!4v1725348905074!5m2!1sen!2set"
+                  src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d985.1870227756814!2d38.68547600000001!3d8.995312!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zOMKwNTknNDMuMSJOIDM4wrA0MScwNy43IkU!5e0!3m2!1sen!2set!4v1740414577762!5m2!1sen!2set"
                   width="100%"
                   height="450"
                   style={{ border: 0 }}
@@ -55,7 +55,7 @@ function Contact() {
                           <h3>Email:</h3>
                         </div>
                       </span>
-                      (mymom0937@gmail.com)
+                      (info@abegarage.com)
                     </li>
                     <li>
                       <span className="bi bi-envelope">
@@ -64,7 +64,7 @@ function Contact() {
                           <h3>Phone:</h3>
                         </div>
                       </span>
-                      +251 937 59 79 17
+                      +251 912 34 56 78
                     </li>
                   </ul>
                 </div>

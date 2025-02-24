@@ -1,13 +1,30 @@
 import React from 'react';
-import './CallToAction.css';
+import { Link } from "react-router-dom";
+// import './CallToAction.css';
 
 const CallToAction = () => {
   return (
-    <section className="call-to-action">
-      <h2>Schedule Your Appointment Today</h2>
-      <p>1-800-456-7890</p>
-      <button className="cta-button">Contact Us</button>
-    </section>
+    <section className="cta-section">
+        <div className="auto-container">
+          <div className="wrapper-box">
+            <div className="left-column">
+              <h3>Schedule Your Appointment Today</h3>
+              <div className="text">
+                Your Automotive Repair & Maintenance Service Specialist
+              </div>
+            </div>
+            <div className="right-column">
+              <div className="phone">1800.456.7890</div>
+              <div className="btn">
+                <Link to="#" className="theme-btn btn-style-one">
+                  <span>Appointment</span>
+                  <i className="flaticon-right"></i>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
   );
 };
 

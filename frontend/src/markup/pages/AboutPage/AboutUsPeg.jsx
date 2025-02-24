@@ -12,15 +12,12 @@ const AboutusPeg = () => {
     <div>
       <div className="App">
         <MainBanner />
-        {/* <Introduction /> */}
         <Introduction />
         <Experience />
         <div className="app-container">
           <WhyChooseUs />
           <AdditionalServices />
         </div>
-        {/* <WhyChooseUs />
-      <AdditionalServices /> */}
         <CallToAction />
         <MainBannerr />
       </div>

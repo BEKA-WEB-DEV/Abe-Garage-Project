@@ -26,8 +26,7 @@ function Footer(props) {
                   </div>
                   <div className="text">
                     Email us : <br />{" "}
-                    {/* <a href="mailto:contact.contact@autorex.com"> */}
-                    <a href="/contact">mymom0937@gmail.com</a>
+                    <a href="/contact">info@abegarage.com</a>
                   </div>
                 </div>
               </div>
@@ -40,7 +39,7 @@ function Footer(props) {
                   </div>
                   <div className="text">
                     Call us on : <br />
-                    <strong>+251 937 59 79 17</strong>
+                    <strong>+251 912 34 56 78</strong>
                   </div>
                 </div>
               </div>
@@ -126,12 +125,12 @@ function Footer(props) {
                       </a>
                     </li>
                     <li>
-                      <a href="/https://www.linkedin.com/in/seid-endris-dev/">
+                      <a href="https://www.linkedin.com/in/beka-tessema">
                         <span className="fab fa-linkedin-in"></span>
                       </a>
                     </li>
                     <li>
-                      <a href="https://github.com/mymom0937/">
+                      <a href="https://github.com/BEKA-WEB-DEV">
                         <span className="fab fa-github"></span>
                       </a>
                     </li>

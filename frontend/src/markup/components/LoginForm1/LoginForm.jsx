@@ -187,7 +187,7 @@ function LoginForm() {
     }
 
     if (!employee_password || employee_password.length < 6) {
-      setPasswordError("Password must be at least 6 characters long");
+      setPasswordError("Password must be at least 8 characters long");
       valid = false;
     } else {
       setPasswordError("");

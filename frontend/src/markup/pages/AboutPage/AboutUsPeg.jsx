@@ -6,6 +6,7 @@ import CallToAction from './CallToAction/CallToAction';
 import MainBannerr from './LastBanner/MainBannerr';
 import MainBanner from "./MainBanner/MainBanner"
 import Experience from "./Experience/Experience"
+import Footer from "../../components/Footer/Footer"
 import "./style.css"
 const AboutusPeg = () => {
   return (
@@ -21,6 +22,7 @@ const AboutusPeg = () => {
         <CallToAction />
         <MainBannerr />
       </div>
+      <Footer />
     </div>
   );
 }

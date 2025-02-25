@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import serviceService from "../../services/service.service"; //to perform API
 import image4 from "../../assets/images/Service_miniBanner.png";
 import { useAuth } from "../../Contexts/AuthContext";
+import Footer from "../components/Footer/Footer";
+
 function Services() {
   const [services, setServices] = useState([]); // State to hold the services data
   const [selectedService, setSelectedService] = useState(null); // State to hold the currently selected service
@@ -56,22 +58,22 @@ function Services() {
         "Ensure smooth and efficient gear shifts with our comprehensive transmission services. Our skilled technicians specialize in transmission fluid changes, clutch replacements, and full transmission rebuilds to maintain your vehicle’s optimal performance.Learn more about the importance of regular transmission maintenance, explore our reliable services, and book an appointment for a smoother drive.",
       iconClass: "flaticon-gearbox",
       servicesList: [
-        //    {
-        //      name:services[2]?.service_name ?? "Loading...",
-        //      description:services[2]?.service_description ?? "Loading...",
-        //    },
-        //    {
-        //      name:services[10]?.service_name ?? "Loading...",
-        //      description:services[10]?.service_description ?? "Loading...",
-        //    },
-        //    {
-        //      name:services[11]?.service_name ?? "Loading...",
-        //      description:services[11]?.service_description ?? "Loading...",
-        //    },
-        //    {
-        //      name:services[12]?.service_name ?? "Loading...",
-        //      description:services[12]?.service_description ?? "Loading...",
-        //    },
+        {
+             name:services[2]?.service_name ?? "Loading...",
+             description:services[2]?.service_description ?? "Loading...",
+           },
+           {
+             name:services[10]?.service_name ?? "Loading...",
+             description:services[10]?.service_description ?? "Loading...",
+           },
+           {
+             name:services[11]?.service_name ?? "Loading...",
+             description:services[11]?.service_description ?? "Loading...",
+           },
+           {
+             name:services[12]?.service_name ?? "Loading...",
+             description:services[12]?.service_description ?? "Loading...",
+           },
       ],
     },
     {
@@ -352,6 +354,8 @@ function Services() {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

@@ -1,0 +1,46 @@
+/* adminDashboard.css */
+
+/* Container - full width container */
+.admin-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+  }
+  
+  /* Row - using Flexbox for layout */
+  .admin-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0; /* Remove default margin if desired */
+  }
+  
+  /* Columns:
+     - For a 12-column system, "2" columns out of 12 is 16.6667%.
+     - "10" columns out of 12 is 83.3333%. 
+  */
+  .admin-col-2 {
+    flex: 0 0 auto;
+    width: 13.6667%;
+    padding: 0 15px;
+  }
+  
+  .admin-col-10 {
+    flex: 0 0 auto;
+    width: 83.3333%;
+    padding: 0 15px;
+  }
+  
+  /* Left Side (Sidebar) */
+  .admin-left-side {
+    background-color: #f8f9fa; 
+    min-height: 100vh; /* Full viewport height */
+    /* Add more styling if you want a fixed sidebar, etc. */
+  }
+  
+  /* Right Side (Main Content) */
+  .admin-right-side {
+    background-color: #fff; 
+    min-height: 100vh;
+    /* Add any custom styles here */
+  }
+  

@@ -2,6 +2,7 @@ import React from "react";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { LuMapPin } from "react-icons/lu";
 import { CiPhone } from "react-icons/ci";
+import Footer from "../components/Footer/Footer";
 
 function Contact() {
   return (
@@ -100,6 +101,7 @@ function Contact() {
           </div>
         </div>
       </section>
+      <Footer />
     </>
   );
 }

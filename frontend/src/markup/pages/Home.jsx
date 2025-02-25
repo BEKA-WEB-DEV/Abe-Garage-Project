@@ -2,6 +2,7 @@ import React from "react";
 import vban1 from "../../assets/images/custom/misc/vban1.jpg";
 import vban2 from "../../assets/images/custom/misc/vban2.jpg";
 import { Link } from "react-router-dom";
+import Footer from "../components/Footer/Footer";
 import "./home.css";
 function Home() {
   return (
@@ -330,6 +331,7 @@ function Home() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

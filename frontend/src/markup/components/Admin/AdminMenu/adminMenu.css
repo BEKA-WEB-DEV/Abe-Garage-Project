@@ -1,4 +1,4 @@
-.admin-menu {
+/* .admin-menu {
   background: #1e2331;
   padding: 10px 20px;
 }
@@ -45,11 +45,144 @@
 }
 
 /* My trying */
-.anchor-link a {
+/* .anchor-link a {
   display: block;
   padding: 8px 3px;
   text-decoration: none;
   color: inherit;
   border-bottom: 1px solid #ddd;
+}
+  */
+/* adminMenu.css */
+
+/* Sidebar container */
+.sidebar-container {
+  width: 235px;
+  background-color: #fff;
+  height: 100vh;
+  border-right: 1px solid #eaeaea;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s;
+  align-items: center;
+}
+
+/* Optional dark-mode styling */
+.dark-mode {
+  background-color: #2c2c2c;
+}
+
+/* Logo / Title area */
+.sidebar-logo {
+  margin: 20px 0;
+  text-align: center;
+  font-size: 1.4rem;
+  color: #5a5a5a;
+  font-weight: bold;
+  margin-top: 205px;
+  align-items: center;
+}
+
+/* Menu container */
+.sidebar-menu {
+  flex: 1; /* fill remaining space */
+  margin-top: 205px;
+}
+
+/* Each link in the sidebar */
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 10px 10px;
+  color: #5a5a5a;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.sidebar-link:hover {
+  background-color: #f1f1f1;
+}
+
+.dark-mode .sidebar-link {
+  color: #ccc; 
+}
+
+.dark-mode .sidebar-link:hover {
+  background-color: #3c3c3c;
+}
+
+/* Icon next to text */
+.sidebar-link .icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+  color: #999;
+  transition: color 0.2s;
+}
+
+.dark-mode .icon {
+  color: #bbb;
+}
+
+/* Footer (Dark mode toggle, logout, etc.) */
+.sidebar-footer {
+  border-top: 1px solid #eaeaea;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Dark Mode Toggle Label */
+.toggle-label {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  color: #5a5a5a;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.dark-mode .toggle-label {
+  color: #ccc;
+}
+
+/* Hide the checkbox input */
+.toggle-label input {
+  display: none;
+}
+
+/* Toggle switch background */
+.toggle-switch {
+  width: 40px;
+  height: 20px;
+  background-color: #ccc;
+  border-radius: 999px;
+  margin-left: 8px;
+  position: relative;
+  transition: background-color 0.3s;
+}
+
+.toggle-switch::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 2px;
+  left: 2px;
+  background-color: #fff;
+  border-radius: 999px;
+  transition: transform 0.3s;
+}
+
+/* When checked, move the toggle knob to the right */
+.toggle-label input:checked + .toggle-switch {
+  background-color: #007bff;
+}
+
+.toggle-label input:checked + .toggle-switch::before {
+  transform: translateX(20px);
 }
 

@@ -22,7 +22,10 @@ import "./assets/template_assets/css/responsive.css";
 import "./assets/template_assets/css/color.css";
 import { Routes, Route } from "react-router";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import "font-awesome/css/font-awesome.min.css";
+
 // Import the custom css file
+
 import "./assets/styles/custom copy.css";
 import "./assets/styles/custom.css";
 
@@ -65,6 +68,7 @@ function App() {
         <Route path="/services" element={<Services />} />
         <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+        {/* <Footer /> */}
         {/* add admin dashboard Route  */}
         <Route
           path="/admin"
@@ -219,7 +223,7 @@ function App() {
           }
         />
       </Routes>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

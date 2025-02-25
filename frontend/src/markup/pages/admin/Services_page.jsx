@@ -9,10 +9,10 @@ function Services_page() {
   return (
     <div className="container-fluid dashboard-container">
       <div className="row">
-        <div className="col-md-3 admin-left-side">
+        <div className="col-md-2 admin-left-side">
           <AdminMenu />
         </div>
-        <div className="col-md-9 services-right-side main-content">
+        <div className="col-md-10 services-right-side main-content">
          <Services_management/>
         </div>
       </div>

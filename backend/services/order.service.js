@@ -1,547 +1,351 @@
-//import connection
-const conn = require("../config/db.config");
-//const { getConnection } = require('./dbConnection'); // Import getConnection function
-const { pool } = require("../config/db.config");
-//import uuid
-const { v4: uuidv4 } = require("uuid"); // Use uuid for unique IDs
-// const { getCustomerInfo } = require("../controllers/order.controller");
-const { query } = require("express");
+// order.service.js
+const { query, withTransaction } = require("../config/db.config");
+const { v4: uuidv4 } = require("uuid");
 
-async function createOrder(order) {
-  const id = uuidv4().toUpperCase();
+// Generate a unique order ID with "ORD" prefix
+const generateOrderId = () => {
+  return 'ORD' + Date.now() + Math.floor(Math.random() * 1000);
+};
+
+const createOrder = async (orderData) => {
   try {
-    // Insert the order into the orders table
-    const query = `
-      INSERT INTO orders (id, employee_id, customer_id, vehicle_id, order_date, active_order, order_hash, order_description) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    const result = await conn.query(query, [
-      id,
-      order.employee_id,
-      order.customer_id,
-      order.vehicle_id,
-      new Date(), // Use current date for order_date
-      order.order_completed,
-      uuidv4(),
-      order.order_description,
-    ]);
+    let success = false;
+    await withTransaction(async (connection) => {
+      // Generate custom order ID and order hash
+      const order_id = generateOrderId();
+      const order_hash = uuidv4();
 
-    if (result.affectedRows !== 1) {
-      return false;
-    }
-
-    // Insert order info with provided order_total_price
-    const orderInfoQuery = `
-      INSERT INTO order_info (id, order_id, order_total_price, estimated_completion_date, completion_date, additional_request, notes_for_internal_use, notes_for_customer, additional_requests_completed) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    await conn.query(orderInfoQuery, [
-      id,
-      result.insertId,
-      order.order_total_price, // Use the price provided from the front end
-      new Date(order.estimated_completion_date), // Convert string to Date object
-      order.completion_date ? new Date(order.completion_date) : null, // Convert string to Date object if present
-      order.additional_request,
-      "", // Assuming internal notes are empty
-      "", // Assuming customer notes are empty
-      order.order_completed,
-    ]);
-
-    // Insert order services
-    const services = order.order_services.split(","); // Assuming a comma-separated list of service IDs
-    for (const service_id of services) {
-      const orderServiceQuery = `
-        INSERT INTO order_services (id, order_id, service_id, service_completed) 
-        VALUES (?, ?, ?, ?)
-      `;
-      await conn.query(orderServiceQuery, [
-        id,
-        result.insertId,
-        service_id,
-        order.order_completed,
+      // Insert into orders table with the custom order_id
+      const query1 =
+        "INSERT INTO orders (order_id, employee_id, customer_id, vehicle_id, active_order, order_hash) VALUES (?,?,?,?,?,?)";
+      const [rows1] = await connection.execute(query1, [
+        order_id,
+        orderData.employee_id,
+        orderData.customer_id,
+        orderData.vehicle_id,
+        orderData.active_order,
+        order_hash,
       ]);
-    }
-    return { id };
+      if (rows1.affectedRows !== 1) {
+        throw new Error("Failed to insert into orders table");
+      }
+
+      // Insert into the order_services table
+      const orderServicesValues = orderData.order_services
+        .map(
+          (service) =>
+            `('${order_id}', '${service.service_id}', ${service.service_completed})`
+        )
+        .join(",");
+      const orderServicesQuery = `INSERT INTO order_services (order_id, service_id, service_completed) VALUES ${orderServicesValues}`;
+      const [orderServicesRows] = await connection.execute(orderServicesQuery);
+      if (orderServicesRows.affectedRows !== orderData.order_services.length) {
+        throw new Error("Failed to insert into order_services table");
+      }
+
+      // Insert into the order_info table
+      const query4 =
+        "INSERT INTO order_info (order_id, order_total_price, estimated_completion_date, completion_date, additional_request, notes_for_internal_use, notes_for_customer, additional_requests_completed, additional_request_price) VALUES (?,?,?,?,?,?,?,?,?)";
+      const [rows4] = await connection.execute(query4, [
+        order_id,
+        orderData.order_total_price,
+        orderData.estimated_completion_date,
+        orderData.completion_date,
+        orderData.additional_request,
+        orderData.notes_for_internal_use,
+        orderData.notes_for_customer,
+        orderData.additional_requests_completed,
+        orderData.additional_request_price,
+      ]);
+      if (rows4.affectedRows !== 1) {
+        throw new Error("Failed to insert into order_info table");
+      }
+
+      // Insert into the order_status table
+      const orderStatusQuery =
+        "INSERT INTO order_status (order_id, order_status) VALUES (?, ?)";
+      const [orderStatusRows] = await connection.execute(orderStatusQuery, [
+        order_id,
+        orderData.order_status,
+      ]);
+      if (orderStatusRows.affectedRows !== 1) {
+        throw new Error("Failed to insert into order_status table");
+      }
+
+      success = true;
+    });
+    return success;
   } catch (error) {
-    console.error("Error creating order:", error);
+    console.log("Transaction error:", error);
     return false;
   }
-}
+};
 
+const orderedServices = async (order_id) => {
+  const sql =
+    "SELECT * FROM order_services JOIN common_services ON order_services.service_id = common_services.service_id WHERE order_services.order_id = ?";
+  const rows = await query(sql, [order_id]);
+  console.log(rows);
+  return rows;
+};
 
+const getOrderByID = async (order_id) => {
+  const sql = `
+    SELECT o.*, oi.*, os.* FROM orders o 
+    LEFT JOIN order_info oi ON o.order_id = oi.order_id
+    LEFT JOIN order_status os ON o.order_id = os.order_id
+    WHERE o.order_id = ?
+  `;
+  const rows = await query(sql, [order_id]);
+  console.log(rows);
+  return rows;
+};
+
+const getVehicleByOrderId = async (order_id) => {
+  const sql =
+    "SELECT * FROM orders JOIN customer_vehicle_info ON customer_vehicle_info.vehicle_id = orders.vehicle_id JOIN customer_identifier ON customer_identifier.customer_id = orders.customer_id JOIN customer_info ON customer_info.customer_id = customer_identifier.customer_id WHERE orders.order_id = ?";
+  const rows = await query(sql, [order_id]);
+  console.log(rows);
+  return rows;
+};
 
 async function getAllOrders() {
+  const sql = `
+    SELECT 
+      o.order_id,
+      o.employee_id,
+      o.customer_id,
+      o.vehicle_id,
+      o.order_date,
+      o.active_order,
+      o.order_hash,
+      os.order_status,
+      v.vehicle_year,
+      v.vehicle_make,
+      v.vehicle_model,
+      v.vehicle_tag,
+      cin.customer_first_name,
+      cin.customer_last_name,
+      cid.customer_email,
+      cid.customer_phone_number,
+      e.employee_first_name,
+      e.employee_last_name,
+      e.employee_phone
+    FROM 
+      orders o
+    JOIN 
+      order_status os ON o.order_id = os.order_id
+    JOIN 
+      customer_vehicle_info v ON o.vehicle_id = v.vehicle_id
+    JOIN 
+      customer_identifier cid ON o.customer_id = cid.customer_id
+    JOIN 
+      customer_info cin ON o.customer_id = cin.customer_id
+    JOIN 
+      employee_info e ON o.employee_id = e.employee_id;
+  `;
+  const rows = await query(sql);
+  const ordersData = rows.map((row) => ({
+    order: {
+      order_id: row.order_id,
+      employee_id: row.employee_id,
+      customer_id: row.customer_id,
+      vehicle_id: row.vehicle_id,
+      order_date: row.order_date,
+      active_order: row.active_order,
+      order_hash: row.order_hash,
+      order_status: row.order_status,
+    },
+    vehicle: {
+      vehicle_id: row.vehicle_id,
+      vehicle_year: row.vehicle_year,
+      vehicle_make: row.vehicle_make,
+      vehicle_model: row.vehicle_model,
+      vehicle_tag: row.vehicle_tag,
+    },
+    customer: {
+      customer_id: row.customer_id,
+      customer_first_name: row.customer_first_name,
+      customer_last_name: row.customer_last_name,
+      customer_email: row.customer_email,
+      customer_phone_number: row.customer_phone_number,
+    },
+    employee: {
+      employee_id: row.employee_id,
+      employee_first_name: row.employee_first_name,
+      employee_last_name: row.employee_last_name,
+      employee_phone: row.employee_phone,
+    },
+  }));
+  return ordersData;
+}
+
+const editOrder = async (orderData) => {
   try {
-    // Query to get all orders
-    const ordersQuery = `
-      SELECT o.id, o.order_id, o.employee_id, o.customer_id, o.vehicle_id, o.order_date, o.order_description, o.active_order, oi.estimated_completion_date, oi.completion_date, oi.additional_requests_completed
-      FROM orders o
-      LEFT JOIN order_info oi ON o.order_id = oi.order_id
-    `;
-    const ordersRows = await conn.query(ordersQuery);
+    let success = false;
+    await withTransaction(async (connection) => {
+      const order_id = orderData.order_id;
+      console.log(order_id);
 
-    // Prepare the result
-    const orders = [];
+      if (orderData.active_order) {
+        const query1 = `UPDATE orders SET active_order = ? WHERE order_id = ?`;
+        const [rows1] = await connection.execute(query1, [
+          orderData.active_order,
+          order_id,
+        ]);
+        console.log(rows1);
+        if (!rows1) {
+          throw new Error("Failed to update active_order in orders table");
+        }
+      }
 
-    // Loop through each order and fetch associated services
-    for (const order of ordersRows) {
-      const servicesQuery = `
-        SELECT os.order_service_id, os.service_id, os.service_completed
-        FROM order_services os
-        WHERE os.order_id = ?
-      `;
-      const servicesRows = await conn.query(servicesQuery, [order.order_id]);
+      if (
+        orderData.order_total_price ||
+        orderData.estimated_completion_date ||
+        orderData.additional_request ||
+        orderData.notes_for_internal_use ||
+        orderData.notes_for_customer ||
+        orderData.additional_requests_completed ||
+        orderData.additional_request_price
+      ) {
+        const query2 = `UPDATE order_info SET
+          order_total_price = ?,
+          estimated_completion_date = ?,
+          additional_request = ?,
+          notes_for_internal_use = ?,
+          notes_for_customer = ?,
+          additional_requests_completed = ?,
+          additional_request_price = ?
+          WHERE order_id = ?`;
+        const [rows2] = await connection.execute(query2, [
+          orderData.order_total_price,
+          orderData.estimated_completion_date,
+          orderData.additional_request || "",
+          orderData.notes_for_internal_use,
+          orderData.notes_for_customer,
+          orderData.additional_requests_completed,
+          orderData.additional_request_price || 0,
+          order_id,
+        ]);
+        console.log(rows2);
+        if (!rows2) {
+          throw new Error("Failed to update order_info table");
+        }
+      }
 
-      orders.push({
-        id: order.id,
-        order_id: order.order_id,
-        employee_id: order.employee_id,
-        customer_id: order.customer_id,
-        vehicle_id: order.vehicle_id,
-        order_description: order.order_description,
-        order_date: order.order_date.toISOString(), // Convert to ISO string
-        estimated_completion_date: order.estimated_completion_date
-          ? order.estimated_completion_date.toISOString()
-          : "",
-        completion_date: order.completion_date
-          ? order.completion_date.toISOString()
-          : "",
-        order_completed: order.active_order, // Assuming this is the completion flag
-        order_services: servicesRows,
-      });
-    }
+      if (orderData.order_status) {
+        const query3 = `UPDATE order_status SET order_status = ? WHERE order_id = ?`;
+        const [rows3] = await connection.execute(query3, [
+          orderData.order_status,
+          order_id,
+        ]);
+        console.log(rows3);
+        if (!rows3) {
+          throw new Error("Failed to update order_status table");
+        }
+      }
 
-    return orders;
+      if (orderData.order_services && orderData.order_services.length > 0) {
+        for (const service of orderData.order_services) {
+          if (service.service_completed !== undefined) {
+            const updateServiceQuery = `UPDATE order_services SET service_completed = ? WHERE order_id = ? AND service_id = ?`;
+            const [rows4] = await connection.execute(updateServiceQuery, [
+              service.service_completed,
+              order_id,
+              service.service_id,
+            ]);
+            console.log(rows4);
+            if (!rows4) {
+              throw new Error("Failed to update order_services table");
+            }
+          }
+        }
+      }
+      success = true;
+    });
+    return success;
   } catch (error) {
-    console.error("Error getting all orders:", error);
+    console.log("Transaction error:", error);
     throw error;
   }
-}
-// A function to get order by id
+};
 
-async function getOrderById(id) {
+const updateOrderProgress = async (order_id, orderData) => {
   try {
-    // Query to get order details based on `id`
-    const orderQuery = `
-      SELECT 
-        o.id, 
-        o.order_id, 
-        o.employee_id, 
-        o.customer_id, 
-        o.vehicle_id, 
-        o.order_description, 
-        o.order_date, 
-        oi.estimated_completion_date, 
-        oi.completion_date, 
-        oi.additional_requests_completed
-      FROM orders o
-      LEFT JOIN order_info oi ON o.order_id = oi.order_id
-      WHERE o.id = ?;
-    `;
-
-    // Execute the query
-    const [orderRows] = await conn.query(orderQuery, [id]);
-
-    // Debugging: Log the result of the query
-    console.log("Order Rows:", orderRows);
-
-    // Check if any order was found
-    if (orderRows.length === 0) {
-      return { status: 404, message: "Order not found" };
-    }
-
-    const order = orderRows; // Extract the first order object
-    console.log(order);
-    // Query to get associated services based on `id`
-    const servicesQuery = `
-      SELECT 
-        os.order_service_id, 
-        os.service_id, 
-        os.service_completed
-      FROM order_services os
-      LEFT JOIN orders o ON os.order_id = o.order_id
-      WHERE o.id = ?;
-    `;
-
-    // Execute the query
-    const [servicesRows] = await conn.query(servicesQuery, [id]);
-
-    // Debugging: Log the result of the query
-    console.log("Services Rows:", servicesRows);
-
-    // Format the response
-    return {
-      id: order.id,
-      order_id: order.order_id,
-      employee_id: order.employee_id,
-      customer_id: order.customer_id,
-      vehicle_id: order.vehicle_id,
-      order_description: order.order_description,
-      order_date: order.order_date ? order.order_date.toISOString() : null, // Convert to ISO string if exists
-      estimated_completion_date: order.estimated_completion_date
-        ? order.estimated_completion_date.toISOString()
-        : null,
-      completion_date: order.completion_date
-        ? order.completion_date.toISOString()
-        : "",
-      order_completed: order.additional_requests_completed, // Assuming this is the completion flag
-      order_services: servicesRows,
-    };
+    await withTransaction(async (connection) => {
+      const query1 =
+        "UPDATE order_status SET order_status = ? WHERE order_id = ?";
+      const [rows1] = await connection.execute(query1, [
+        orderData.order_status,
+        order_id,
+      ]);
+      if (rows1.affectedRows === 0) {
+        throw new Error("Failed to update order_status table");
+      }
+      for (const service of orderData.order_services) {
+        if (service.service_completed !== undefined && service.order_service_id) {
+          const updateServiceQuery =
+            "UPDATE order_services SET service_completed = ? WHERE order_service_id = ?";
+          const [rows2] = await connection.execute(updateServiceQuery, [
+            service.service_completed,
+            service.order_service_id,
+          ]);
+          if (rows2.affectedRows === 0) {
+            throw new Error(`Failed to update service with id ${service.order_service_id} in order_services table`);
+          }
+        }
+      }
+      const query3 =
+        "UPDATE order_info SET additional_requests_completed = ? WHERE order_id = ?";
+      const [rows3] = await connection.execute(query3, [
+        orderData.additional_requests_completed,
+        order_id,
+      ]);
+      if (rows3.affectedRows === 0) {
+        throw new Error("Failed to update additional_requests_completed in order_info table");
+      }
+    });
+    return { message: "Order progress updated successfully" };
   } catch (error) {
-    console.error("Error getting order by ID:", error);
-    return { status: 500, message: "Internal server error" };
+    console.error("Error updating order progress:", error);
+    throw new Error(`Failed to update order progress: ${error.message}`);
   }
-}
+};
 
-// A function to update an existing order// Function to update an existing order
-
-async function updateOrderInDatabase(orderData) {
-  const {
-    id, // This is the order_id
-    order_services = [], // Ensure it's an array
-    order_completed, // Should map to `active_order` in your schema
-  } = orderData;
-
-  // Use connection pool for database operations
-  const connection = await pool.getConnection();
-
-  try {
-    // Begin transaction
-    await connection.beginTransaction();
-
-    // Prepare and execute service update queries
-    for (const service of order_services) {
-      await connection.query(
-        `UPDATE order_services SET service_completed = ? WHERE id = ? AND service_id = ?`,
-        [service.service_completed, id, service.service_id]
-      );
-    }
-
-    // Prepare and execute the order update query
-    await connection.query(`UPDATE orders SET active_order = ? WHERE id = ?`, [
-      order_completed,
-      id,
-    ]);
-
-    // Commit transaction
-    await connection.commit();
-
-    return { status: 200, message: "Order updated successfully" };
-  } catch (error) {
-    // Rollback transaction on error
-    await connection.rollback();
-    console.error("Error updating order data:", error);
-    return { status: 500, message: "An unexpected error occurred" };
-  } finally {
-    connection.release(); // Release the connection back to the pool
-  }
-}
-
-
-// A function to delete an order by ID
-// Update with the correct path
-
-async function deleteOrder(id) {
-  const connection = await pool.getConnection();
-  try {
-    await connection.beginTransaction();
-
-    try {
-      // Delete related entries from order_services
-      await connection.query("DELETE FROM order_services WHERE id = ?", [id]);
-
-      // Delete related entries from order_status
-      await connection.query("DELETE FROM order_status WHERE id = ?", [id]);
-
-      // Delete related entries from order_info
-      await connection.query("DELETE FROM order_info WHERE id = ?", [id]);
-
-      // Delete the order itself
-      await connection.query("DELETE FROM orders WHERE id = ?", [id]);
-
-      // Commit the transaction
-      await connection.commit();
-
-      return {
-        status: 200,
-        message: "Order deleted successfully",
-      };
-    } catch (err) {
-      // Rollback the transaction in case of an error
-      await connection.rollback();
-      throw err;
-    }
-  } catch (error) {
-    console.error("Error in deleteOrder function:", error);
-    return {
-      status: 500,
-      message: "Internal server error",
-    };
-  } finally {
-    connection.release();
-  }
-}
-
-
-async function getCustomerInfoFromDb(customerIds) {
-  if (!Array.isArray(customerIds) || customerIds.length === 0) {
-    throw new Error("Invalid customer_ids");
-  }
-
-  // Create a comma-separated list of placeholders for the IN clause
-  const placeholders = customerIds.map(() => "?").join(",");
-
-  // SQL query to fetch customer information along with the id from the customer_info table
-  const query = `
+const getOrdersByCustomerId = async (customer_id) => {
+  const sql = `
     SELECT 
-      ci.customer_first_name,
-      ci.customer_last_name,
-      c.customer_email,
-      c.customer_phone_number,
-      c.customer_id,
-      ci.id AS customer_info_id
-    FROM
-      customer_info ci
-    JOIN
-      customer_identifier c ON ci.customer_id = c.customer_id
+      o.order_id,
+      ci.customer_id,
+      oi.completion_date,
+      cvi.vehicle_make,
+      cvi.vehicle_model,
+      os.order_status
+    FROM 
+      order_info oi
+    JOIN 
+      orders o ON oi.order_id = o.order_id
+    JOIN 
+      customer_identifier ci ON o.customer_id = ci.customer_id
+    JOIN 
+      customer_vehicle_info cvi ON o.vehicle_id = cvi.vehicle_id
+    JOIN 
+      order_status os ON o.order_id = os.order_id
     WHERE
-      ci.customer_id IN (${placeholders})
+      o.customer_id = ?;
   `;
-
-  try {
-    // Execute the query with the customerIds as parameters
-    const rows = await conn.query(query, customerIds);
-    return rows;
-  } catch (error) {
-    console.error("Error fetching customer info:", error);
-    throw new Error("Database query error");
-  }
-}
-
-//a function to get vehicle by id
-async function getVehicleById(vehicleIds) {
-  try {
-    // Create a comma-separated list of placeholders based on the number of vehicle IDs
-    const placeholders = vehicleIds.map(() => "?").join(",");
-    console.log("placeholders:", placeholders);
-
-    // Construct the SQL query
-    const query = `
-      SELECT
-        cvi.vehicle_id,
-        cvi.vehicle_model,
-        cvi.vehicle_year,
-        cvi.vehicle_tag
-      FROM
-        customer_vehicle_info cvi
-      JOIN
-        orders o ON o.vehicle_id = cvi.vehicle_id
-      WHERE
-        o.vehicle_id IN (${placeholders})
-    `;
-
-    // Execute the query with the vehicle IDs as parameters
-    const rows = await conn.query(query, vehicleIds);
-
-    // Return the result
-    return rows;
-  } catch (error) {
-    console.error("Error fetching vehicle info:", error);
-    throw new Error("Database query error");
-  }
-}
-
-async function getEmployeeInfoByOrderIds(orderIds) {
-  if (!Array.isArray(orderIds) || orderIds.length === 0) {
-    throw new Error("An array of order IDs is required");
-  }
-
-  // Ensure orderIds are unique and escape any special characters to avoid SQL injection
-  const uniqueOrderIds = [
-    ...new Set(orderIds.map((id) => id.toString().trim())),
-  ];
-  const placeholders = uniqueOrderIds.map(() => "?").join(",");
-  const query = `
-    SELECT 
-      ei.employee_first_name,
-      ei.employee_last_name,
-      ei.employee_id
-    FROM
-      orders o
-    JOIN
-      employee_info ei ON o.employee_id = ei.employee_id
-    WHERE
-      o.order_id IN (${placeholders});
-  `;
-
-  try {
-    const rows = await conn.query(query, uniqueOrderIds); // Assuming conn.query returns an array of rows
-    return rows;
-  } catch (error) {
-    console.error("Error fetching employee info:", error);
-    throw new Error("Database query error");
-  }
-}
-
-
-// async function getServiceInfoByOrderId(orderId) {
-//   console.log("orderId:", orderId);
-//   if (!orderId) {
-//     throw new Error("Order ID is required");
-//   }
-
-//   const query = ` 
-//     SELECT 
-//     oi.additional_request,
-//     cs.service_name,
-//     cs.service_description,
-//     cvi.vehicle_tag
-// FROM 
-//     orders o
-// JOIN 
-//     order_info oi ON o.order_id = oi.order_id
-// JOIN 
-//     order_services os ON o.order_id = os.order_id
-// JOIN 
-//     common_services cs ON os.service_id = cs.service_id
-// JOIN 
-//     customer_vehicle_info cvi ON o.vehicle_id = cvi.vehicle_id
-// WHERE 
-//     o.id = ?; 
-//   `;
-
-//   try {
-//     const rows = await conn.query(query, [orderId]); // Assuming conn.query returns a tuple with rows as the first element
-//     return rows;
-//     console.log("rows:", rows);
-//   } catch (error) {
-//     console.error("Error fetching service info:", error);
-//     throw new Error("Database query error");
-//   }
-// }
-
-//a function to get getCustomerAndVehicleInfo
-
-async function getServiceInfoByOrderId(orderId) {
-  console.log("orderId:", orderId);
-  if (!orderId) {
-    throw new Error("Order ID is required");
-  }
-
-  const query = ` 
-    SELECT 
-     o.active_order,
-    oi.additional_request,
-    cs.service_name,
-    cs.service_description,
-    cs.service_id,
-    cvi.vehicle_tag
-FROM 
-    orders o
-JOIN 
-    order_info oi ON o.order_id = oi.order_id
-JOIN 
-    order_services os ON o.order_id = os.order_id
-JOIN 
-    common_services cs ON os.service_id = cs.service_id
-JOIN 
-    customer_vehicle_info cvi ON o.vehicle_id = cvi.vehicle_id
-WHERE 
-    o.id = ?; 
-  `;
-
-  try {
-    const rows = await conn.query(query, [orderId]); // Assuming conn.query returns a tuple with rows as the first element
-    return rows;
-    console.log("rows:", rows);
-  } catch (error) {
-    console.error("Error fetching service info:", error);
-    throw new Error("Database query error");
-  }
-}
-
-async function getCustomerAndVehicleInfo(id) {
-  if (!id) { 
-    throw new Error("Order ID is required");
-  } 
- const query = `
-   SELECT 
-    ci_info.customer_first_name AS customer_first_name,
-    ci_info.customer_last_name AS customer_last_name,
-    ci.customer_id AS customer_id,
-    ci.id AS id,
-    ci.customer_phone_number AS customer_phone_number,
-    ci.customer_email AS customer_email,
-    cvi.id AS vehicleId,
-    cvi.vehicle_id AS vehicle_id,
-    cvi.vehicle_model AS vehicle_model,
-    cvi.vehicle_tag AS vehicle_tag,
-    cvi.vehicle_year AS vehicle_year,
-    cvi.vehicle_mileage AS vehicle_mileage,
-    cvi.vehicle_color AS vehicle_color,
-    o.active_order AS active_order
-FROM 
-    orders o
-JOIN 
-    customer_identifier ci ON o.customer_id = ci.customer_id
-JOIN 
-    customer_info ci_info ON ci.customer_id = ci_info.customer_id
-JOIN 
-    customer_vehicle_info cvi ON o.vehicle_id = cvi.vehicle_id
-WHERE 
-    o.id = ?;
-`;
-
- try {
-   // Execute the query with the provided id parameter
-   const [rows] = await conn.query(query, [id]);
-   return rows;
- } catch (error) {
-   // Log the error and throw a new error with a descriptive message
-   console.error("Error fetching customer and vehicle info:", error);
-   throw new Error("Database query error");
- }
-
-}   
-
-//a function to get all order per coustmer
-async function getOrdersByCustomerId(customer_id) {
-  if (!customer_id) {
-    throw new Error("Order ID is required");
-  }
-  const query = `SELECT 
-    o.order_id,
-    oi.order_total_price,
-    CASE 
-        WHEN o.active_order = 1 THEN 'Completed'
-        ELSE 'Not Completed'
-    END AS order_status,
-    o.order_date
-FROM orders o
-LEFT JOIN order_info oi ON o.order_id = oi.order_id
-WHERE o.customer_id = ?
-ORDER BY o.order_id DESC;`;
-
-
-  try {
-    const rows = await conn.query(query, [customer_id]);
-    return rows;
-  } catch (error) {
-    console.error("Error fetching orders:", error);
-    throw new Error("Database query error");
-  }
-}
+  const rows = await query(sql, [customer_id]);
+  console.log(rows);
+  return rows.length > 0 ? rows : null;
+};
 
 module.exports = {
   createOrder,
+  orderedServices,
+  getVehicleByOrderId,
+  editOrder,
   getAllOrders,
-  getOrderById,
-  updateOrderInDatabase,
-  deleteOrder,
-  getCustomerInfoFromDb,
-  getVehicleById,
-  getEmployeeInfoByOrderIds,
-  getServiceInfoByOrderId,
+  getOrderByID,
+  updateOrderProgress,
   getOrdersByCustomerId,
-  getCustomerAndVehicleInfo
 };

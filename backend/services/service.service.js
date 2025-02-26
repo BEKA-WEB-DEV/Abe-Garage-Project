@@ -1,157 +1,165 @@
-// import db config
 const conn = require("../config/db.config");
-const { v4: uuidv4 } = require("uuid"); // Use uuid for unique IDs
 
-// A function to check if service exists in the database
-async function checkIfServiceExists(id) {
-  const query = "SELECT * FROM common_services WHERE id = ? ";
-  const rows = await conn.query(query, [id]);
-  console.log(rows);
-  if (rows.length > 0) {
-    return true;
+// Generate a unique service ID with "SER" prefix
+const generateServiceId = () => {
+  return 'SER' + Date.now() + Math.floor(Math.random() * 1000);
+};
+
+const getExistingServiceNames = async () => {
+  const query = "SELECT service_name FROM common_services";
+  const rows = await conn.query(query);
+  return rows.map((row) => row.service_name);
+};
+
+const createServices = async () => {
+  const existingServiceNames = await getExistingServiceNames();
+  const newServices = [
+    {
+      name: "Oil change",
+      description:
+        "Every 5,000 kilometers or so, you need to change the oil in your car to keep your engine in the best possible shape.",
+      price: "30.25",
+    },
+    {
+      name: "Spark Plug replacement",
+      description:
+        "Spark plugs are a small part that can cause huge problems. Their job is to ignite the fuel in your engine, helping it start.",
+      price: "43",
+    },
+    {
+      name: "Fuel Cap tightening",
+      description:
+        "Loose fuel caps are actually a main reason why the 'check engine' light in a car comes on.",
+      price: "12",
+    },
+    {
+      name: "Oxygen Sensor replacement",
+      description:
+        "Oxygen sensors measure the concentration of oxygen in the exhaust gases to optimize engine performance and emissions.",
+      price: "39.5",
+    },
+    {
+      name: "Brake Work",
+      description:
+        "Brake work is critical – a failure to stop properly is one cause of many accidents.",
+      price: "25",
+    },
+    {
+      name: "Tire repairs and changes",
+      description:
+        "Patch a leak or replace worn tires to maintain speed, control, and fuel efficiency.",
+      price: "55",
+    },
+    {
+      name: "The ignition system",
+      description:
+        "A car's ignition system includes its battery, starter, and ignition components.",
+      price: "45.5",
+    },
+    {
+      name: "Programming the camera software",
+      description:
+        "Enhance vehicle capabilities and security with updated camera software.",
+      price: "30",
+    },
+  ];
+
+  const servicesToInsert = newServices.filter((newService) => {
+    return !existingServiceNames.includes(newService.name);
+  });
+
+  if (servicesToInsert.length === 0) {
+    console.log("All services already exist in the database.");
+    return;
   }
-  return false;
+
+  // For each new service, generate a service_id with "SER" prefix
+  const values = servicesToInsert
+    .map(
+      (service) =>
+        `('${generateServiceId()}', '${service.name}', '${service.description}', '${service.price}')`
+    )
+    .join(", ");
+
+  const query = `INSERT INTO common_services (service_id, service_name, service_description, service_price) VALUES ${values}`;
+  const rows = await conn.query(query);
+  return rows;
+};
+
+async function addService(service) {
+  const checkquery = "SELECT service_name FROM common_services WHERE service_name = ?";
+  const [check] = await conn.query(checkquery, [service.service_name]);
+  if (check) {
+    return;
+  }
+  // Generate a unique service_id
+  const service_id = generateServiceId();
+  const query =
+    "INSERT INTO common_services (service_id, service_name, service_description, service_price) VALUES (?, ?, ?, ?)";
+  const rows = await conn.query(query, [
+    service_id,
+    service.service_name,
+    service.service_description,
+    service.service_price,
+  ]);
+  return rows;
 }
 
-// A function to create a new service 
-async function createService(service) {
-  console.log("Calling createService with:", service);
-  let createdService = [];
-  try {
-    console.log("Calling createService with:", service);
-    // generate a unique string ID
-    const id = uuidv4().toUpperCase();
-    //cheack if service already exists
-    const serviceExists = await checkIfServiceExists(id);
-    console.log("Service exists:", serviceExists);
-    if (serviceExists) {
-      console.log("Service already exists, returning false");
-      return false;
-    }
+const getSingleService = async (service_id) => {
+  const query = "SELECT * FROM common_services WHERE service_id = ?";
+  const row = await conn.query(query, [service_id]);
+  return row;
+};
 
-
-    // insert service_name and  service_description into the common_services table with the generated ID
-
-   const query =
-     "INSERT INTO common_services (id, service_name, service_description, service_price) VALUES (?, ?, ?, ?)";
-   console.log("About to execute query:", query);
-   console.log(
-     "With values:",
-     id,
-     service.service_name,
-     service.service_description,
-     service.service_price
-   );
-   const rows = await conn.query(query, [
-     id,
-     service.service_name,
-     service.service_description,
-     service.service_price,
-   ]);
-
-    console.log("Query executed. Rows:", rows);
-    console.log(rows);
- if (rows.affectedRows !== 1) {
-      console.log("Error inserting service, returning false");
-      return false;
-    } else {
-      console.log("Service inserted successfully, returning createdService");
-      createdService = {
-        id: id,
+const editService = async (service) => {
+  let updatedService = {};
+  if (
+    service.service_name ||
+    service.service_description ||
+    service.service_price
+  ) {
+    const serviceQuery = `
+        UPDATE common_services
+        SET 
+          ${service.service_name ? "service_name = ?," : ""}
+          ${service.service_description ? "service_description = ?," : ""}
+          ${service.service_price ? "service_price = ?" : ""}
+        WHERE service_id = ?`;
+    const queryParams = [
+      service.service_name,
+      service.service_description,
+      service.service_price,
+      service.service_id,
+    ].filter((param) => param !== undefined && param !== "");
+    const rows = await conn.query(serviceQuery, queryParams);
+    if (rows) {
+      updatedService = {
+        service_name: service.service_name,
+        service_description: service.service_description,
+        service_price: service.service_price,
       };
-    } 
-  } catch (err) {
-    console.log("Error creating service:", err);     
-    console.log(err);
-         
-  }
-  return createdService;
-} 
-
-
-
-// A function to get service by id
-async function getServiceById(id) {
-  try {
-    console.log("Calling getServiceById with:", id);
-    const [service] = await conn.query(
-      "SELECT * FROM common_services WHERE id = ?",
-      [id]  
-    );
-    console.log("Query executed. Rows:", service);
-       
-    if (service.length === 0) {
-      console.log("Service not found, returning 404");
-      return { status: 404, message: "Service not found" };
     }
-    console.log("Service found, returning the service");
-    return service;
-  } catch (error) {
-    console.error("Error in getServiceById service:", error);
-    console.log(error);
-    console.error("Error in getServiceById service:", error);           
-    return { status: 500, message: "Internal server error" };
   }
+  return updatedService;
+};
+
+async function deleteService(serviceId) {
+  const query = "DELETE FROM common_services WHERE service_id = ?";
+  const rows = await conn.query(query, [serviceId]);
+  return true;
 }
 
-
-// A function to get all services
-async function getServices() {
-  try {   
-    const services = await conn.query("SELECT * FROM common_services");
-    return services;
-  } catch (error) {  
-    console.error("Error in getServices service:", error);
-    return { status: 500, message: "Internal server error" };
-  }
-}     
-
-// A function to delete a service by ID
-
-async function deleteService(id) {
-  try {
-    const [service] = await conn.query(
-    
-      "SELECT * FROM common_services WHERE id = ?",
-      [id]
-    );
-    if (!service) {
-      console.log("Service not found, returning 404");
-      return { status: 404, message: "Service not found" };
-    }
-
-    const result = await conn.query(
-      "DELETE FROM common_services WHERE id = ?",
-      [id]
-    );
-
-    if (result.affectedRows === 0) {
-   
-      return { status: 404, message: "Service not found" };
-    }
-
-    return { status: 200, message: "Service deleted successfully" };
-  } catch (error) {
-    console.error("Error in deleteService service:", error);
-    return { status: 500, message: "Internal server error" };
-  }
+async function getAllServices() {
+  const query = "SELECT * FROM common_services";
+  const rows = await conn.query(query);
+  return rows;
 }
 
-
-// a function to update service
-async function updateService( service) {  
-  try {     
-    const services = await conn.query(
-      "UPDATE common_services SET service_name = ?, service_description = ? WHERE  service_id = ?",
-      [service.service_name, service.service_description, service.service_id]
-    );
-    return { status: 200, message: "Service updated successfully" };
-  } catch (error) {
-    console.error("Error in updateService service:", error);
-    return { status: 500, message: "Internal server error" };
-  }
-}
-
-  
-
-module.exports = { createService, getServiceById, getServices, deleteService, updateService }
+module.exports = {
+  createServices,
+  addService,
+  getSingleService,
+  editService,
+  deleteService,
+  getAllServices,
+};

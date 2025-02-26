@@ -1,239 +1,118 @@
-const conn = require("../config/db.config");
+// customer.service.js
 const { v4: uuidv4 } = require("uuid");
+const conn = require("../config/db.config");
 
-async function createCustomer(customer) {
-  let createdCustomer = {};
+// Generate a unique customer ID with "CUS" prefix
+const generateCustomerId = () => {
+  return 'CUS' + Date.now() + Math.floor(Math.random() * 1000);
+};
+
+// Check if customer exists
+async function checkIfCustomerExists(email) {
+  const query = "SELECT * FROM customer_identifier WHERE customer_email = ?";
+  const rows = await conn.query(query, [email]);
+  console.log(rows);
+  return rows.length > 0;
+}
+
+// Add customer
+async function addCustomer(customer) {
+  // Generate custom customer ID and hash
+  const customer_id = generateCustomerId();
+  const customer_hash = uuidv4();
+  console.log("Generated Customer ID:", customer_id);
+  
   try {
-    // Generate a unique string ID
-    const id = uuidv4().toUpperCase();
-
-    // Insert into the customer_identifier table
-    const query1 = `
-      INSERT INTO customer_identifier (id, customer_email, customer_phone_number, customer_hash)
-      VALUES (?, ?, ?, ?)
-    `;
-    const result1 = await conn.query(query1, [
-      id,
+    // Insert customer data into customer_identifier with custom ID
+    const query =
+      "INSERT INTO customer_identifier (customer_id, customer_email, customer_phone_number, customer_hash) VALUES (?, ?, ?, ?)";
+    const result = await conn.query(query, [
+      customer_id,
       customer.customer_email,
       customer.customer_phone_number,
-      customer.customer_hash,
-      
+      customer_hash,
     ]);
-
-    if (result1.affectedRows !== 1) {
-      throw new Error("Failed to insert into customer_identifier");
+    if (result.affectedRows !== 1) {
+      throw new Error("Failed to insert customer identifier");
     }
 
-    // Insert into the customer_info table
-    const query2 = `
-      INSERT INTO customer_info (customer_id, id, customer_first_name, customer_last_name, active_customer_status)
-      VALUES ((SELECT customer_id FROM customer_identifier WHERE id = ?), ?, ?, ?, ?)
-    `;
-    const result2 = await conn.query(query2, [
-      id, // Used to fetch the customer_id
-      id,
+    // Insert customer info into customer_info table
+    const queryInfo =
+      "INSERT INTO customer_info (customer_id, customer_first_name, customer_last_name, active_customer_status) VALUES (?, ?, ?, ?)";
+    const resultInfo = await conn.query(queryInfo, [
+      customer_id,
       customer.customer_first_name,
       customer.customer_last_name,
-      customer.active_customer_status,
+      1, // active_customer_status set to 1
     ]);
-
-    if (result2.affectedRows !== 1) {
-      throw new Error("Failed to insert into customer_info");
+    if (resultInfo.affectedRows !== 1) {
+      throw new Error("Failed to insert customer info");
     }
 
-    createdCustomer = {
-      id: id,
-    };
-
-    return {
-      status: 201,
-      message: "Customer created successfully",
-      success: true,
-      createdCustomer: createdCustomer,
-    };
+    return { customer_id };
   } catch (err) {
     console.error(err);
-    return {
-      status: 500,
-      message: "An unexpected error occurred.",
-      success: false,
-      error: err.message,
-    };
+    return false;
   }
 }
 
-// A function to get all customers
+// get all customers
 async function getAllCustomers() {
-  try {
-    const query = `
-    SELECT
-        ci.id,
-        ci.customer_id,
-        ci.customer_email,
-        ci.customer_phone_number,
-        ci.customer_hash,
-        ci.customer_added_date,
-        ci_info.customer_first_name,
-        ci_info.customer_last_name,
-        ci_info.active_customer_status
-    FROM
-        customer_identifier ci
-    JOIN
-        customer_info ci_info
-    ON
-        ci.customer_id = ci_info.customer_id
-`;
+  const query =
+    "SELECT * FROM customer_info JOIN customer_identifier ON customer_info.customer_id = customer_identifier.customer_id";
   const rows = await conn.query(query);
-  console.log(rows); 
-
-    // Format the response
-    const customers = rows.map((row) => ({
-      id: row.id,
-      customer_id: row.customer_id,
-      customer_email: row.customer_email,
-      customer_phone_number: row.customer_phone_number,
-      customer_first_name: row.customer_first_name,
-      customer_last_name: row.customer_last_name,
-      customer_hash: row.customer_hash,
-      active_customer_status: row.active_customer_status,
-      customer_added_date: row.customer_added_date,
-    }));
-
-    return {
-      success: true,
-      status: 200,
-      limit: customers.length, // Optional: include the limit
-      data: customers,
-    };
-  } catch (err) {
-    console.error(err);
-    return {
-      success: false,
-      status: 500,
-      error: "Internal Server Error",
-      message: "An unexpected error occurred.",
-    };
-  }
-}     
-
-
-
-
-async function getCustomerById(id) {
-  try {
-    const query = `
-    SELECT
-        ci.id,
-        ci.customer_id,
-        ci.customer_email,
-        ci.customer_phone_number,
-        ci.customer_hash,
-        ci.customer_added_date,
-        ci_info.customer_first_name,
-        ci_info.customer_last_name,
-        ci_info.active_customer_status
-    FROM
-        customer_identifier ci
-    JOIN
-        customer_info ci_info
-    ON
-        ci.customer_id = ci_info.customer_id
-    WHERE
-        ci.id = ?
-`;
-    const rows = await conn.query(query, [id]);
-
-    // Check if a customer was found
-    if (rows.length === 0) {
-      return {
-        success: false,
-        status: 404,
-        error: "Not Found",
-        message: "Customer not found",
-      };
-    }
-
-    // Return the customer data
-    const customer = rows[0];
-    return {
-      success: true,
-      status: 200,
-      data: {
-        id: customer.id,
-        customer_id: customer.customer_id,
-        customer_email: customer.customer_email,
-        customer_phone_number: customer.customer_phone_number,
-        customer_first_name: customer.customer_first_name,
-        customer_last_name: customer.customer_last_name,
-        customer_hash: customer.customer_hash,
-        active_customer_status: customer.active_customer_status,
-        customer_added_date: customer.customer_added_date,
-      },
-    };
-  } catch (err) {
-    console.error(err);
-    return {
-      success: false,
-      status: 500,
-      error: "Internal Server Error",
-      message: "An unexpected error occurred.",
-    };
-  }
+  return rows;
 }
 
-
-
-
-
-async function updateCustomerInDatabase(
-  customer_id,
-  customer_first_name,
-  customer_last_name,
-  customer_phone_number,
-  active_customer_status
-) {
-  try {
-    console.log("Calling updateCustomerInDatabase with:", {
-      customer_id,
-      customer_first_name,
-      customer_last_name,
-      customer_phone_number,
-      active_customer_status,
-    });
-
-    const query = `
-      UPDATE customer_identifier ci
-      JOIN customer_info ci2 ON ci.customer_id = ci2.customer_id
-      SET ci.customer_phone_number = ?, ci2.customer_first_name = ?, ci2.customer_last_name = ?, ci2.active_customer_status = ?
-      WHERE ci.customer_id = ?
-    `;
-
-    // Assuming 'conn' is a properly initialized database connection
-    const result = await conn.query(query, [
-      customer_phone_number,
-      customer_first_name,
-      customer_last_name,
-      active_customer_status,
-      customer_id,
-    ]);
-
-    console.log("Result of updateCustomerInDatabase:", result);
-
-    return result;
-  } catch (error) {
-    console.error("Error in updateCustomerInDatabase:", error);
-    throw new Error("Internal server error");
-  }
+// get customer by id
+async function getCustomerById(customerId) {
+  const query = `
+    SELECT customer_info.*, customer_identifier.customer_email, customer_identifier.customer_phone_number, customer_identifier.customer_added_date, customer_identifier.customer_hash
+    FROM customer_info
+    LEFT JOIN customer_identifier ON customer_info.customer_id = customer_identifier.customer_id
+    WHERE customer_info.customer_id = ?
+  `;
+  const rows = await conn.query(query, [customerId]);
+  return rows;
 }
 
+// delete customer by id
+async function deleteCustomerById(customerId) {
+  await conn.query("DELETE FROM customer_info WHERE customer_id = ?", [customerId]);
+  await conn.query("DELETE FROM customer_identifier WHERE customer_id = ?", [customerId]);
+  return true;
+}
 
- 
-
+// edit customer
+async function editCustomer(updatedCustomerData) {
+  if (
+    updatedCustomerData.customer_first_name ||
+    updatedCustomerData.customer_last_name ||
+    updatedCustomerData.active_customer_status
+  ) {
+    const query = `UPDATE customer_info SET
+      ${updatedCustomerData.customer_first_name ? "customer_first_name = ?," : ""} 
+      ${updatedCustomerData.customer_last_name ? "customer_last_name = ?," : ""}
+      ${updatedCustomerData.active_customer_status ? "active_customer_status = ?" : ""}
+      WHERE customer_id = ?`;
+      
+    const queryParams = [
+      updatedCustomerData.customer_first_name,
+      updatedCustomerData.customer_last_name,
+      updatedCustomerData.active_customer_status,
+      updatedCustomerData.customer_id,
+    ].filter((param) => param !== undefined);
+    
+    const rows = await conn.query(query, queryParams);
+    return rows;
+  }
+}
 
 module.exports = {
-  createCustomer,
+  addCustomer,
+  checkIfCustomerExists,
   getAllCustomers,
   getCustomerById,
-  updateCustomerInDatabase,
-  
+  deleteCustomerById,
+  editCustomer,
 };

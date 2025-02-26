@@ -1,4 +1,3 @@
-
 // Import the employee service
 const employeeService = require("../services/employee.service");
 // Create the add employee controller
@@ -26,8 +25,6 @@ async function createEmployee(req, res, next) {
       } else {
         res.status(200).json({
           status: "true",
-          employee_id: employee.employee_id,
-          message: "Employee added successfully",
         });
       }
     } catch (error) {
@@ -52,68 +49,65 @@ async function getAllEmployees(req, res, next) {
     res.status(200).json({
       status: "success",
       data: employees,
-    })}};
+    });
+  }
+}
 
+//delete employee
 
-
-
-async function getEmployeeByIdController(req, res, next) {
-  const id = req.params.employee_id;
-  console.log(id);
-
+async function deleteEmployeeById(req, res, next) {
+  const employee_id = req.params.employee_id; // Using req.params.id to get the employee_id from the route URL
   try {
-    const result = await employeeService.getEmployeeFromDb(id); // Call the DB function
+    const deleteEmployee = await employeeService.deleteEmployeeById(
+      employee_id
+    );
 
-    if (result.status === 404) {
-      return res.status(404).json({ message: result.message });
+    if (!deleteEmployee) {
+      res.status(400).json({
+        error: "Failed to delete employee!",
+      });
+    } else {
+      res.status(200).json({
+        status: "success",
+      });
     }
-
-    res.status(200).json({ data: result.data });
-  } catch (err) {
-    console.error("Error fetching employee:", err);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
-
-async function updateEmployee(req, res) {
- const id = req.params.employee_id;
-  const employeeData = req.body;
-  console.log(employeeData);
-  
-
-  try {
-  const result = await employeeService.updateEmployee(id, employeeData);
-    res
-      .status(result.status)
-      .json({ status: result.status, message: result.message });
-  } catch (err) {
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
-
-// Export the createEmployee controller 
-
-//Delete Employee
-async function deleteEmployee(req, res) {
-  const id = req.params.employee_id;
-
-  try {
-    const result = await employeeService.deleteEmployee(id);
-    res
-      .status(result.status)
-      .json({ status: result.status, message: result.message });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error); // Pass any caught error to the error handler middleware
+  }
+}
+async function getEmployeeById(req, res, next) {
+  const employee_id = req.params.employee_id;
+  const [employee] = await employeeService.getEmployeeById(employee_id);
+  if (!employee) {
+    res.status(400).json({
+      error: "Failed to get employee info!",
+    });
+  } else {
+    res.status(200).json({
+      employee,
+    });
   }
 }
 
+async function editEmployee(req, res, next) {
+  const employee = req.body;
+  const updatedEmployee = await employeeService.editEmployee(employee);
+  if (!updatedEmployee) {
+    res.status(400).json({
+      error: "Failed to edit employee info!",
+    });
+  } else {
+    res.status(200).json({
+      message: "Employee data updated successfully",
+      updatedEmployee,
+    });
+  }
+}
 // Export the createEmployee controller
 module.exports = {
   createEmployee,
   getAllEmployees,
-  getEmployeeByIdController,
-  updateEmployee,
-  deleteEmployee,
+  deleteEmployeeById,
+  getEmployeeById,
+  editEmployee,
 };

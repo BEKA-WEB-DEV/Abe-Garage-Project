@@ -1,141 +1,40 @@
-// Import from the env
-const api_url = import.meta.env.VITE_API_URL;
+import { axiosBase } from "../util/Axios";
 
-// A function to send post request to create a new employee
+// Import from the env
+const api_url = process.env.REACT_APP_API_URL;
+
+// A function to send post request to create a new employee 
 const createEmployee = async (formData, loggedInEmployeeToken) => {
   const requestOptions = {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      "x-access-token": loggedInEmployeeToken,
+      'Content-Type': 'application/json',
+      'x-access-token': loggedInEmployeeToken
     },
-    body: JSON.stringify(formData),
+    body: JSON.stringify(formData)
   };
   console.log(requestOptions);
-  const response = await fetch(`${api_url}/api/employee`, requestOptions);
+  const response = await fetch(`${api_url}/api/employee/add`, requestOptions);
   return response;
-};
+}
 
 // A function to send get request to get all employees
 const getAllEmployees = async (token) => {
-  console.log("Using token for API request:", token); // Debug log
-
+  // console.log(token);
   const requestOptions = {
-    method: "GET",
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
-      "x-access-token": token,
-    },
+      'Content-Type': 'application/json',
+      'x-access-token': token
+    }
   };
-
-  try {
-    const response = await fetch(`${api_url}/api/employees`, requestOptions);
-
-    // Check if the response status is OK
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    // Parse the JSON data from the response
-    const data = await response.json();
-    console.log(data);
-    // Check the status of the returned data
-    if (data.status !== "success") {
-      throw new Error(
-        "Failed to fetch employees: " + (data.message || "Unknown error")
-      );
-    }
-
-    return data; // Return the data to be used by the calling code
-  } catch (error) {
-    console.error("Error fetching employees:", error);
-    throw error; // Re-throw the error to be handled by the caller
-  }
-};
-const getEmployeeById = async (token, employee_id) => {
-  console.log("Fetching employee ID:", employee_id);
-  const requestOptions = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-access-token": token,
-    },
-  };
-
-  try {
-    const response = await fetch(
-      `${api_url}/employee/${employee_id}`,
-      requestOptions
-    );
-
-    console.log("Response:", response);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        `HTTP error! Status: ${response.status}, Details: ${errorText}`
-      );
-    }
-
-    const data = await response.json();
-
-    console.log("Data:", data);
-
-    // Ensure `data` contains `data` field and it is an array with at least one item
-    if (!data || !Array.isArray(data.data) || data.data.length === 0) {
-      throw new Error(
-        `Failed to fetch employee: ${data.message || "Unknown error"}`
-      );
-    }
-
-    // Return the first item of the array
-    return data.data[0];
-  } catch (error) {
-    console.error("Error fetching employee:", error);
-    throw error;
-  }
-};
-// Function to update employee data
-const updateEmployee = async (token, employee_id, formData) => {
-  const requestOptions = {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "x-access-token": token,
-    },
-    body: JSON.stringify(formData),
-  };
-
-  try {
-    const response = await fetch(
-      `${api_url}/employee/${employee_id}`,
-      requestOptions
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        `HTTP error! Status: ${response.status}, Details: ${errorText}`
-      );
-    }
-
-    const data = await response.json();
-console.log(data);
-    if (data.status === 200) {
-      return data; // Return the data if the update was successful
-    } else {
-      throw new Error(
-        `Failed to update employee: ${data.message || "Unknown error"}`
-      );
-    }
-  } catch (error) {
-    console.error("Error updating employee:", error);
-    throw error;
-  }
+  const response = await fetch(`${api_url}/api/employee/all`, requestOptions);
+  return response;
 };
 
-// A function to send delete request to delete an employee
-const deleteEmployee = async (token, employee_id) => {
+//* A function to send delete request to delete an employee
+const deleteEmployee = async (employee_id, token) => {
+  console.log(token);
   const requestOptions = {
     method: "DELETE",
     headers: {
@@ -144,29 +43,37 @@ const deleteEmployee = async (token, employee_id) => {
     },
   };
 
-  try {
-    const response = await fetch(`${api_url}/employee/${employee_id}`, requestOptions);
+  const response = await fetch(
+    `${api_url}/api/employee/${employee_id}`,
+    requestOptions
+  );
+  console.log(response);
+  return response.ok;
+};
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        `HTTP error! Status: ${response.status}, Details: ${errorText}`
-      );
-    }
+// *End of function to delete an employee
 
-    const data = await response.json();
-console.log(data);
-    if (data.status === 200) {
-      return data; // Return the data if the delete was successful
-    } else {
-      throw new Error(
-        `Failed to delete employee: ${data.message || "Unknown error"}`
-      );
-    }
-  } catch (error) {
-    console.error("Error deleting employee:", error);
-    throw error;
-  }
+
+// A function to send get request to get a single employee it is get request
+const getEmployeeById = async (employee_id, token) => {
+  
+    const response = await axiosBase.get(`/api/employee/${employee_id}`, {
+      headers: {
+        "x-access-token": token,
+      },
+    });
+  console.log(response);
+    return response;
+}; 
+  
+const editEmployee = async (formData, token) => {
+  const response = await axiosBase.post(`/api/employee/edit`, formData, {
+    headers: {
+      "x-access-token": token,
+    },
+  });
+  console.log(response);
+  return response;
 };
 
 // Export all the functions
@@ -174,7 +81,7 @@ const employeeService = {
   createEmployee,
   getAllEmployees,
   getEmployeeById,
-  updateEmployee,
   deleteEmployee,
+  editEmployee,
 };
 export default employeeService;

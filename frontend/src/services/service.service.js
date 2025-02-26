@@ -1,152 +1,92 @@
-const api_url = import.meta.env.VITE_API_URL;
+import { axiosBase } from "../util/Axios";
 
-// A function to send post request to create a new employee
-const createService = async (formData, loggedInEmployeeToken) => {
-  console.log(formData);
+const api_url = process.env.REACT_APP_API_URL;
+
+const addService = async (serviceData, loggedInEmployeeToken) => {
   const requestOptions = {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "x-access-token": loggedInEmployeeToken,
     },
-    body: JSON.stringify(formData),
   };
-  console.log("Creating service with", requestOptions);
-
   try {
-    //Call this function when you want to add a new service to the system. It takes formData (service details) and the token of the logged-in user.
-    const response = await fetch(`${api_url}/api/service`, requestOptions);
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(
-        `Failed to create service. Status: ${response.status}, Details: ${errorText}`
-      );
-      throw new Error(`Failed to create service: ${errorText}`);
+    const response = await axiosBase.post(
+      `${api_url}/api/service/add`,
+      serviceData,
+      requestOptions
+    );
+    if (response.status !== 200) {
+      throw new Error(`Failed to add service: ${response.statusText}`);
     }
-    return response.json();
+    console.log(response);
+    return response;
   } catch (error) {
-    console.error("Error creating service:", error);
+    // Handle error here
+    console.log(error.message);
     throw error;
   }
 };
 
-// A function to send get request to get a list of all employees from the server.
 const getAllServices = async (token) => {
-  const requestOptions = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-access-token": token,
-    },
-  };
-
   try {
-    const response = await fetch(`${api_url}/api/services`, requestOptions);
-    // Check if the response status is OK
+    const requestOptions = {
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token,
+      },
+    };
+    const response = await axiosBase.get(
+      `${api_url}/api/service/all`,
+      requestOptions
+    );
     console.log(response);
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+    if (response.status !== 200) {
+      throw new Error(`Failed to fetch services: ${response.statusText}`);
     }
-    // Parse the JSON data from the response
-    const data = await response.json();
-    console.log(data);
-    // Check the status of the returned data
-    if (data && Array.isArray(data) && data.length > 0) {
-      console.log("Data fetched successfully:", data);
-      return data; // Return the data to be used by the calling code
-    } else {
-      console.error("No data returned or data is not in expected format.");
-      throw new Error(
-        `No service data available. Please add a new service.`
-      );
-    }
+    console.log(response.data); // Logging data here
+    return response.data;
   } catch (error) {
     console.error("Error fetching services:", error);
-    throw error; // Re-throw the error to be handled by the caller
+    throw new Error("Failed to fetch services");
   }
 };
 
-const getServiceById = async (token, id) => {
-  console.log("Fetching service ID:", id);
+const getSingleService = async (service_id, token) => {
   const requestOptions = {
-    method: "GET",
     headers: {
       "Content-Type": "application/json",
       "x-access-token": token,
     },
   };
 
-  try {
-    const response = await fetch(
-      `${api_url}/api/service/${id}`,
-      requestOptions
-    );
-
-    console.log("Response:", response);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        `HTTP error! Status: ${response.status}, Details: ${errorText}`
-      );
-    }
-
-    const data = await response.json();
-
-    console.log("Data:", data);
-
-    // Ensure `data` contains `data` field and it is an array with at least one item
-    if (typeof data !== "object" || Object.keys(data).length === 0) {
-      throw new Error(
-        `Failed to fetch service: ${data.message || "Unknown error"}`
-      );
-    }
-    // Return the first item of the array
-    return data;
-  } catch (error) {
-    console.error("Error fetching service:", error);
-    throw error;
-  }
+  const response = await axiosBase.get(
+    `${api_url}/api/service/single/${service_id}`,
+    requestOptions
+  );
+  console.log(response.data); // Log the service data
+  return response.data; // Return the data part of the response
 };
-// Function to update employee data
-const updateService = async (token, formData) => {
-  console.log(formData);
+
+const editService = async (serviceData, token) => {
   const requestOptions = {
-    method: "PUT",
+    method: "EDIT",
     headers: {
       "Content-Type": "application/json",
       "x-access-token": token,
     },
-    body: JSON.stringify(formData),
   };
-  console.log("FormData being sent:", formData);
-  try {
-    const response = await fetch(
-      `${api_url}/api/service/`,
-      requestOptions
-    );
-    // if (!response.ok) {
-    //   const errorText = await response.text();
-    //   throw new Error(
-    //     `HTTP error! Status: ${response.status}, Details: ${errorText}`
-    //   );
-    // }
-    if (response) {
-console.log(response);
-      return response; // Return the data if the update was successful
-    } else {
-      throw new Error(
-        `Failed to update service: ${data.message || "Unknown error"}`
-      );
-    }
-  } catch (error) {
-    console.error("Error updating service:", error);
-    throw error;
-  }
+  const response = await axiosBase.put(
+    `${api_url}/api/service/edit`,
+    serviceData,
+    requestOptions
+  );
+  console.log(response);
+  return response;
 };
 
-// A function to send delete request to delete an employee
-const deleteService = async (token, id) => {
+const deleteServiceById = async (service_id, token) => {
+  console.log(token);
   const requestOptions = {
     method: "DELETE",
     headers: {
@@ -154,39 +94,19 @@ const deleteService = async (token, id) => {
       "x-access-token": token,
     },
   };
-
-  try {
-    const response = await fetch(
-      `${api_url}/api/service/${id}`,
-      requestOptions
-    );
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        `HTTP error! Status: ${response.status}, Details: ${errorText}`
-      );
-    }
-
-    if (response.status === 200) {
-      console.log(response);
-      return response; // Return the data if the delete was successful
-    } else {
-      throw new Error(
-        `Failed to delete service: ${data.message || "Unknown error"}`
-      );
-    }
-  } catch (error) {
-    console.error("Error deleting service:", error);
-    throw error;
-  }
+  const response = await fetch(
+    `${api_url}/api/service/delete/${service_id}`,
+    requestOptions
+  );
+  return response.ok;
 };
 
-// Export all the functions
 const serviceService = {
-  createService,
+  addService,
   getAllServices,
-  getServiceById,
-  updateService,
-  deleteService,
+  getSingleService,
+  editService,
+  deleteServiceById,
 };
+
 export default serviceService;

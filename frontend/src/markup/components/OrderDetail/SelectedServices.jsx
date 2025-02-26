@@ -1,5 +1,5 @@
 import React from "react";
-import OrderStatusDropdown from "../../components/Admin/Order/OrderList/OrderStatusDropdown";
+import OrderStatusDropdown from "../Admin/Order/OrderList/OrderStatusDropdown";
 import { getStatusClass, orderStatusLabels } from "../../../util/statusUtils";
 
 function SelectedServices({

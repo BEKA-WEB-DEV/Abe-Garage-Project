@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import AdminMenu from "../../../../components/Admin/AdminMenu/AdminMenu";
-import CustomerInfo from "../../../../components/Admin/Customer/CustomerInfo/CustomerInfo";
-import VehicleInfo from "../../../../components/Admin/Vehicle/VehicleInfo/VehicleInfo";
-import AddVehicleForm from "../../../../components/Admin/Vehicle/AddVehicleForm/AddVehicleForm";
-import EditVehicleForm from "../../../../components/Admin/Vehicle/EditVehicleForm/EditVehicleForm";
+import AdminMenu from "../../AdminMenu/AdminMenu";
+import CustomerInfo from "../CustomerInfo/CustomerInfo";
+import VehicleInfo from "../../Vehicle/VehicleInfo/VehicleInfo";
+import AddVehicleForm from "../../Vehicle/AddVehicleForm/AddVehicleForm";
+import EditVehicleForm from "../../Vehicle/EditVehicleForm/EditVehicleForm";
 import vehicleService from "../../../../../services/vehicle.service";
 import { useAuth } from "../../../../../Contexts/AuthContext";
 import customerService from "../../../../../services/customer.service";
-import CustomerOrder from "../../../../components/Admin/Order/CustomerOrder/CustomerOrder";
+import CustomerOrder from "../../Order/CustomerOrder/CustomerOrder";
 
 function CustomerProfile() {
   const [showForm, setShowForm] = useState(false);

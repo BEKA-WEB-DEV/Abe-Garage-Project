@@ -7,11 +7,12 @@ import About from "./markup/pages/About";
 import Login from "./markup/pages/Login";
 import Unauthorized from "./markup/pages/Unauthorized";
 import AdminDashboard from "./markup/pages/admin/adminpage/AdminDashboard";
-import "./assets/template_assets/css/bootstrap.css";
+// import "./assets/template_assets/css/bootstrap.css";
 import "./assets/template_assets/css/style.css";
 import "./assets/template_assets/css/responsive.css";
 import "./assets/template_assets/css/color.css";
 
+import 'bootstrap/dist/css/bootstrap.min.css';
 import "./assets/styles/custom.css";
 
 import Header from "./markup/components/Header/Header";
@@ -52,7 +53,7 @@ function App() {
         <Route path='/admin/order/*' element={<OrderRouter />} />
         <Route path='/admin/services/*' element={<ServiceRouter />} />
       </Routes>
-      <Footer />
+      
     </>
   );
 }

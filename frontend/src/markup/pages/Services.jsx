@@ -5,6 +5,7 @@ import AdditionalServices from '../components/AdditionalServices/AdditionalServi
 import WorkingSince from '../components/WorkingSince/WorkingSince';
 import Appointment from '../components/Appointment/Appointment';
 import Image3 from "../../assets/images/image3.jpg"
+import Footer from '../components/Footer/Footer';
 
 function Services() {
   return (
@@ -23,6 +24,7 @@ function Services() {
       <AdditionalServices />
       <WorkingSince />
       <Appointment />
+      <Footer />
     </div>
   );
 }

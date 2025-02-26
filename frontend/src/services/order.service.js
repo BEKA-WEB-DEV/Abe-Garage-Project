@@ -2,7 +2,7 @@
 import { axiosBase } from "../util/Axios";
 
 // Import from the env
-const api_url = process.env.REACT_APP_API_URL;
+const api_url = import.meta.env.VITE_API_URL;
 
 // A function to send  to get all services
 const getAllServices = async (token) => {

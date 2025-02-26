@@ -6,6 +6,7 @@ import WorkingSince from '../components/WorkingSince/WorkingSince';
 import Appointment from '../components/Appointment/Appointment';
 import Leader from "../../assets/images/Leaders.jpg";
 import Image2 from "../../assets/images/image2.jpg";
+import Footer from '../components/Footer/Footer';
 
 function About() {
   return (
@@ -42,6 +43,7 @@ function About() {
       <AdditionalServices />
       <WorkingSince />
       <Appointment />
+      <Footer />
     </div>
   );
 }

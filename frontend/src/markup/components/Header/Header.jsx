@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "../../../assets/images/g3logo.png";
-import loginService from "../../../services/login.service";
+import {logOut} from "../../../services/login.service";
 import { useAuth } from "../../../Contexts/AuthContext";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
@@ -9,8 +9,8 @@ import CloseIcon from "@mui/icons-material/Close";
 function Header() {
   const { isAdmin, isLogged, setIsLogged, employee } = useAuth();
 
-  const logOut = () => {
-    loginService.logOut();
+  const handlelogOut = () => {
+    logOut();
     setIsLogged(false);
   };
 
@@ -64,12 +64,12 @@ function Header() {
               {isLogged ? (
                 <div className="link-btn">
                   <div className="phone-number">
-                    <strong>Welcome :){employee?.employee_first_name}</strong>
+                    <strong>Welcome - {employee?.employee_first_name}</strong>
                   </div>
                 </div>
               ) : (
                 <div className="phone-number">
-                  Schedule Appointment: <strong>+251713829204</strong>
+                  Schedule Appointment: <strong>+251912345678</strong>
                 </div>
               )}
             </div>
@@ -131,7 +131,7 @@ function Header() {
                       <Link
                         className=""
                         onClick={() => {
-                          logOut();
+                          handlelogOut();
                           handleMenuClick();
                         }}
                         to="/"
@@ -153,8 +153,8 @@ function Header() {
                 {isLogged ? (
                   <Link
                     to="/"
-                    className="theme-btn btn-style-one blue"
-                    onClick={logOut}
+                    className="theme-btn btn-style-one"
+                    onClick={handlelogOut}
                   >
                     Log out
                   </Link>

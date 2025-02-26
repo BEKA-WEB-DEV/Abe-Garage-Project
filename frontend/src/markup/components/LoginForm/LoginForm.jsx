@@ -1,25 +1,26 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import loginService from "../../../services/login.service";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { logIn } from "../../../services/login.service";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function LoginForm() {
   const navigate = useNavigate();
   const location = useLocation();
   const [employee_email, setEmail] = useState("");
   const [employee_password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [serverError, setServerError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setLoading] = useState(false); // State to manage loading state
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     let valid = true;
 
-    // Email validation
     if (!employee_email) {
       setEmailError("Please enter your email address first");
       valid = false;
@@ -36,9 +37,8 @@ function LoginForm() {
       }
     }
 
-    // Password validation
     if (!employee_password || employee_password.length < 6) {
-      setPasswordError("Password must be at least 6 characters long");
+      setPasswordError("Password must be at least 8 characters long");
       valid = false;
     } else {
       setPasswordError("");
@@ -48,23 +48,18 @@ function LoginForm() {
       return;
     }
 
-    setLoading(true); // Set loading state to true during form submission
-
-    // Handle form submission
     const formData = {
       employee_email,
       employee_password,
     };
 
     try {
-      const loginEmployee = await loginService.logIn(formData);
+      const loginEmployee = await logIn(formData);
       const response = await loginEmployee.json();
-
       if (response.status === "success") {
         if (response.data.employee_token) {
           localStorage.setItem("employee", JSON.stringify(response.data));
         }
-
         if (location.pathname === "/login") {
           window.location.replace("/");
         } else {
@@ -74,9 +69,7 @@ function LoginForm() {
         setServerError(response.message);
       }
     } catch (err) {
-      setServerError("An error has occurred. Please try again later. " + err);
-    } finally {
-      setLoading(false); // Set loading state back to false after form submission
+      setServerError("An error has occurred. Please try again later." + err);
     }
   };
 
@@ -111,25 +104,21 @@ function LoginForm() {
                         </div>
                       )}
                     </div>
-
                     <div className="form-group col-md-12">
-                      <div className="password-wrapper">
+                      <div className="password-container">
                         <input
                           type={showPassword ? "text" : "password"}
                           name="employee_password"
                           value={employee_password}
                           onChange={(event) => setPassword(event.target.value)}
                           placeholder="Password"
+                          className="password-input"
                         />
                         <span
                           className="password-toggle-icon"
-                          onClick={() => setShowPassword(!showPassword)}
+                          onClick={togglePasswordVisibility}
                         >
-                          {showPassword ? (
-                            <VisibilityIcon />
-                          ) : (
-                            <VisibilityOffIcon />
-                          )}
+                          {showPassword ? <FaEyeSlash /> : <FaEye />}
                         </span>
                       </div>
                       {passwordError && (
@@ -138,18 +127,13 @@ function LoginForm() {
                         </div>
                       )}
                     </div>
-
                     <div className="form-group col-md-12">
                       <button
                         className="theme-btn btn-style-one"
                         type="submit"
-                        disabled={isLoading} // Disable button when loading
+                        data-loading-text="Please wait..."
                       >
-                        {isLoading ? (
-                          <span>Loading...</span>
-                        ) : (
-                          <span>Login</span>
-                        )}
+                        <span>Login</span>
                       </button>
                     </div>
                   </div>

@@ -34,6 +34,7 @@ textarea::placeholder {
 /* Admin pages */
 .admin-left-side {
   background-color: #222b48;
+  padding: 0;
 }
 .admin-right-side {
   background: rgb(246 247 250);

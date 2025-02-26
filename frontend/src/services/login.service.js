@@ -1,7 +1,8 @@
-const api_url = process.env.REACT_APP_API_URL;
+const api_url = import.meta.env.VITE_API_URL;
+
 
 // A function to send the login request to the server 
-const logIn = async (formData) => {
+export const logIn = async (formData) => {
   const requestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -14,13 +15,13 @@ const logIn = async (formData) => {
 }
 
 // A function to log out the user
-const logOut = () => {
+export const logOut = () => {
   localStorage.removeItem("employee");
 };
 
 
-// Export the functions 
-module.exports = {
-  logIn,
-  logOut
-}
+// // Export the functions 
+// module.exports = {
+//   logIn,
+//   logOut
+// }

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import serviceService from "../../services/service.service";
+import Footer from '../components/Footer/Footer';
 
 function ReadMore() {
 
@@ -44,6 +45,7 @@ function ReadMore() {
                 </div>
               </div>
             </section>
+            <Footer />
     </div>
   )
 }

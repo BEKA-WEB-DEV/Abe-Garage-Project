@@ -1,5 +1,5 @@
 import React from "react";
-import OrderCustomerInfo from "../../../components/Admin/Order/OrderCustomerDetail/OrderCustomerInfo.js";
+import OrderCustomerInfo from "../../../components/Admin/Order/OrderCustomerDetail/OrderCustomerInfo.jsx";
 // Import the admin menu component
 import AdminMenu from "../../../components/Admin/AdminMenu/AdminMenu.jsx";
 

@@ -6,6 +6,7 @@ import QualityService from "../components/QualityService/QualityService";
 import AdditionalServices from "../components/AdditionalServices/AdditionalServices";
 import WorkingSince from "../components/WorkingSince/WorkingSince";
 import Appointment from "../components/Appointment/Appointment";
+import Footer from "../components/Footer/Footer";
 
 function Home(props) {
   return (
@@ -17,6 +18,7 @@ function Home(props) {
       <AdditionalServices />
       <WorkingSince />
       <Appointment />
+      <Footer />
     </div>
   );
 }

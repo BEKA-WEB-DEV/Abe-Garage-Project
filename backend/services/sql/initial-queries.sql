@@ -140,7 +140,7 @@ VALUES ('EMP001', 'Admin', 'Admin', '555-555-5555');
 
 -- Password is 123456789
 INSERT INTO employee_pass (employee_id, employee_password_hashed)
-VALUES ('EMP001', '$2y$10$S2EF.ttUrbaOwiTozz2PaeN3Lz6r4ehBxKezwHfYqWBXnjxm6VQSq');
+VALUES ('EMP001', '$2b$10$S2EF.ttUrbaOwiTozz2PaeN3Lz6r4ehBxKezwHfYqWBXnjxm6VQSq');
 
 -- Assign a role to the employee
 INSERT INTO employee_role (employee_id, company_role_id)

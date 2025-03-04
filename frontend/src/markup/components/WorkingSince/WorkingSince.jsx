@@ -22,7 +22,7 @@ function WorkingSince() {
                 to="https://www.youtube.com/watch?v=nfP5N9Yc72A&amp;t=28s"
                 className="overlay-link lightbox-image video-fancybox ripple"
               >
-                <i className="flaticon-play"></i>
+                <i className="fab fa-youtube"></i>
               </Link>
             </div>
             <div className="text">

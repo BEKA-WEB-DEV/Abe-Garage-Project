@@ -4,6 +4,8 @@ import Home from "./markup/pages/Home";
 import Services from "./markup/pages/Services";
 import About from "./markup/pages/About";
 
+import "@fortawesome/fontawesome-free/css/all.css";
+import "@fontsource/inter";
 import Login from "./markup/pages/Login";
 import Unauthorized from "./markup/pages/Unauthorized";
 import AdminDashboard from "./markup/pages/admin/adminpage/AdminDashboard";

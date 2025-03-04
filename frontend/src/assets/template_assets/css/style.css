@@ -2415,16 +2415,16 @@ img {
 
 .video-section .video-box .video-btn a {
     position: relative;
-    height: 70px;
-    width: 70px;
-    line-height: 70px;
+    height: 50px;
+    width: 30px;
+    /* line-height: 65px; */
     text-align: center;
-    border-radius: 50%;
+    /* border-radius: 70%; */
     margin-right: 25px;
-    display: inline-block;
+    /* display: inline-block; */
     font-size: 72px;
     transition: .5s;
-    background-color: #fff;
+    /* background-color: #fff; */
 }
 
 .video-section .video-box .video-btn a:hover {
@@ -3956,7 +3956,7 @@ img {
 ***/
 
 .page-title{
-    position:relative;
+    position: relative;
     padding: 108px 0;
     background-size:cover;
     background-repeat:no-repeat;
@@ -4018,6 +4018,7 @@ img {
     -webkit-transition:all 0.3s ease;
     -ms-transition:all 0.3s ease;
     -o-transition:all 0.3s ease;
+    text-decoration: none;
 }
 
 .page-breadcrumb li a:hover{

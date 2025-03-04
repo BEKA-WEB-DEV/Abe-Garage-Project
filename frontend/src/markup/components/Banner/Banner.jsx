@@ -18,7 +18,7 @@ function Banner() {
           <div className="video-box">
             <div className="video-btn">
               <a href="/" className="overlay-link lightbox-image video-fancybox ripple">
-                <i className="flaticon-play"></i>
+                <i className="fab fa-youtube"></i>
               </a>
             </div>
             <div className="text">

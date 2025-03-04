@@ -16,7 +16,7 @@ function Footer(props) {
                     <span className="flaticon-pin"></span>
                   </div>
                   <div className="text">
-                    Akaki Kality, <br /> Addis Ababa, Ethiopia
+                    Addis Ababa, Ethiopia
                   </div>
                 </div>
               </div>
@@ -30,7 +30,7 @@ function Footer(props) {
                   <div className="text">
                     Email us : <br />{" "}
                     <Link to="mailto:contact.contact@autorex.com">
-                      g3autorepair@yahoo.com
+                    info@abegarage.com
                     </Link>
                   </div>
                 </div>
@@ -44,7 +44,7 @@ function Footer(props) {
                   </div>
                   <div className="text">
                     Call us on : <br />
-                    <strong>+251713829204</strong>
+                    <strong>+251912345678</strong>
                   </div>
                 </div>
               </div>
@@ -145,7 +145,7 @@ function Footer(props) {
       <div className="auto-container">
         <div className="footer-bottom">
           <div className="copyright-text">
-            © Copyright <Link to="#">G3 Auto Repair</Link> 2024 . All right
+            © Copyright <Link to="#">Abe Garage</Link> 2024 . All right
             reserved.
           </div>
         </div>

@@ -444,6 +444,7 @@ img {
     border-radius: 0;
     overflow: hidden;
     text-transform: uppercase;
+    text-decoration: none;
 }
 
 
@@ -675,6 +676,7 @@ img {
 
 .main-header .header-upper .link-btn a {
     vertical-align: middle;
+    text-decoration: none;
 }
 
 .main-header .header-upper .search-toggler {
@@ -2998,7 +3000,7 @@ img {
 
 .cta-section .wrapper-box {
     position: relative;
-    padding: 37px 50px 13px;
+    padding: 37px 10px 13px;
 }
 
 .cta-section .wrapper-box {
@@ -3019,6 +3021,7 @@ img {
     color: #fff;
     font-size: 18px;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .cta-section .right-column {
@@ -3030,7 +3033,7 @@ img {
 
 .cta-section .phone {
     position: relative;
-    font-size: 42px;
+    font-size: 35px;
     font-weight: 700;
     color: #fff;
     margin-right: 30px;
@@ -3043,6 +3046,7 @@ img {
     padding-right: 26px;
     background-color: #fff;
     color: #000;
+    text-decoration: none;
 }
 
 .cta-section .theme-btn i {
@@ -3063,6 +3067,7 @@ img {
 .main-footer {
     position: relative;
     background-color: #081336;
+    text-decoration: none;
 }
 
 .main-footer .upper-box {
@@ -3105,6 +3110,7 @@ img {
 .main-footer .footer-info-box .text a {
     font-size: 20px;
     color: #fff;
+    text-decoration: none;
 }
 
 .main-footer .footer-info-box .text strong {
@@ -3152,6 +3158,7 @@ img {
 .widget_links li a {
     color: #b2b9c5;
     font-size: 17px;
+    text-decoration: none;
 }
 
 /* Widget Newsletter*/
@@ -3224,6 +3231,11 @@ img {
 }
 
 /* Footer Bottom */
+
+/* .widget-content.footer-li a{
+    text-decoration: none;
+    color: #b2b9c5;
+} */
 
 .footer-bottom {
     position: relative;

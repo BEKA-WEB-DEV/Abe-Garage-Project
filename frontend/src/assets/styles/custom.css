@@ -981,6 +981,11 @@ ul .pagination {
 .footerli li {
   color: #b2b9c5;
   font-size: 17px;
+  text-decoration: none;
+}
+
+.footerli li a {
+  text-decoration: none;
 }
 
 

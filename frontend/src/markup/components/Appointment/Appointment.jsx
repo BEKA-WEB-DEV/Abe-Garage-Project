@@ -14,7 +14,7 @@ function Appointment() {
               </div>
             </div>
             <div className='right-column'>
-              <div className='phone'>+251713829204</div>
+              <div className='phone'>+251912345678</div>
               <div className='btn'>
                 <Link to='/Contact' className='theme-btn btn-style-one'>
                   <span>Appointment</span>

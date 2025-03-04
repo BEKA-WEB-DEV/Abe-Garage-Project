@@ -6,6 +6,7 @@ import { CiPhone } from "react-icons/ci";
 import backgroundImage from "../../assets/images/10001.jpg";
 import Appointment from "../components/Appointment/Appointment";
 import Footer from "../components/Footer/Footer";
+import styles from "./Contact.module.css";
 
 const Contact = () => {
   return (
@@ -47,41 +48,29 @@ const Contact = () => {
             {/* Info Column */}
             <div className='info-column col-lg-5'>
               <div className='inner-column'>
-                <h4>Our Address</h4>
-                <div className='text'>
-                  Completely synergize resource taxing relationships via premier
-                  niche markets. Professionally cultivate one-to-one customer
-                  service.
+                <div className={`${styles.contactInfo}`}>
+                <h2>Our Address <span>____</span></h2>
+                <div className={styles.description}>
+                    Completely synergize resource taxing relationships via premier niche
+                    markets. Professionally cultivate one-to-one customer service.
                 </div>
-                <div className="col-md-12">
-                  <ul className="">
-                    <div className="Address">
-                      <LuMapPin className="mr-3" size={30} />
-                      <h3>Address:</h3>
+                <address className={styles.address}>
+                    <div>
+                        <i className="fas fa-map-marker-alt"></i>
+                        <p><strong>Address:</strong> <br />Addis Ababa, Ethiopia</p>
                     </div>
-                    (Addis Ababa, Ethiopia)
-                    <li>
-                      <span className="email">
-                        <div className="Email">
-                          <MdOutlineMailOutline className="mr-3" size={30} />
-                          <h3>Email:</h3>
-                        </div>
-                      </span>
-                      (info@abegarage.com)
-                    </li>
-                    <li>
-                      <span className="bi bi-envelope">
-                        <div className="phone">
-                          <CiPhone className="mr-3" size={35} />
-                          <h3>Phone:</h3>
-                        </div>
-                      </span>
-                      +251 912 34 56 78
-                    </li>
-                  </ul>
-                </div>
+                    <div>
+                        <i className="fas fa-envelope"></i>
+                        <p><strong>Email:</strong> <br /> info@abegarage.com</p>
+                    </div>
+                    <div>
+                        <i className="fas fa-phone"></i>
+                        <p><strong>Phone:</strong> <br /> +251912345678</p>
+                    </div>
+                </address>
               </div>
               </div>
+            </div>
             </div>
           </div>
         

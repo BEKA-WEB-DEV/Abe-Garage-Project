@@ -1160,9 +1160,9 @@ body {
   padding-top: 0; /* Initial value, adjust based on your needs */
 }
 
-.fixed-header ~ * {
-  padding-top: 100px; /* Adjust based on the height of your header */
-}
+/* .fixed-header ~ * {
+  padding-top: 10px; Adjust based on the height of your header */
+/* } */
 
 
 
